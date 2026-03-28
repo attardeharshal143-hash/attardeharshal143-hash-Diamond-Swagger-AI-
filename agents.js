@@ -2909,6 +2909,12 @@ Diamond Swagger Solutions Team`
             
             setAgentArchitectureStatus('sales', 'running');
             
+            // Scroll to the agent architecture execution container so user can see progress
+            const architectureCard = document.getElementById('agent-architecture-card');
+            if (architectureCard) {
+                architectureCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            
             setTimeout(() => {
                 setAgentArchitectureStatus('sales', 'done');
                 btn.style.display = 'none';
