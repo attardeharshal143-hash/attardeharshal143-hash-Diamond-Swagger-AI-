@@ -2441,7 +2441,7 @@ Execute the detailed analysis now. Return ONLY the JSON object.`;
                     showToast("2. Check Google Cloud Status page");
                     showToast("3. Try a different time of day");
                     showToast("🎭 Loading Demo Mode...");
-                    setTimeout(() => loadDemoData(), 2000);
+                    loadDemoData();
                 } else if (err.message.includes('429') || err.message.includes('Rate limit')) {
                     showToast("❌ Rate Limit Exceeded");
                     showToast("📊 Free Tier Limits:");
@@ -2452,7 +2452,7 @@ Execute the detailed analysis now. Return ONLY the JSON object.`;
                     showToast("2. Use Demo Mode to see how it works");
                     showToast("3. Upgrade to paid tier for higher limits");
                     showToast("🎭 Loading Demo Mode...");
-                    setTimeout(() => loadDemoData(), 2000);
+                    loadDemoData();
                 } else if (err.message.includes('403') || err.message.includes('access denied')) {
                     showToast("❌ API Access Denied");
                     showToast("💡 Possible issues:");
@@ -2464,11 +2464,11 @@ Execute the detailed analysis now. Return ONLY the JSON object.`;
                     showToast("❌ Network Connection Error");
                     showToast("💡 Check your internet connection");
                     showToast("🎭 Loading Demo Mode...");
-                    setTimeout(() => loadDemoData(), 2000);
+                    loadDemoData();
                 } else {
                     showToast(`❌ ${err.message}`);
                     showToast("🎭 Loading Demo Mode...");
-                    setTimeout(() => loadDemoData(), 2000);
+                    loadDemoData();
                 }
             } finally {
                 runBtn.innerHTML = originalText;
@@ -2727,11 +2727,6 @@ Best regards,
 Diamond Swagger Solutions Team`
             };
 
-            setAgentStatus('running');
-            
-            // Wait for agent animation to complete (2.5 seconds)
-            await new Promise(resolve => setTimeout(resolve, 2500));
-            
             setAgentStatus('done');
             renderResults();
             showToast("Demo Mode: Sample analysis loaded!");
@@ -2944,24 +2939,11 @@ Diamond Swagger Solutions Team`
                 architectureCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
 
-            let salesProgress = 0;
-            const progressInterval = setInterval(() => {
-                salesProgress += Math.random() * 12;
-                if (salesProgress >= 90) {
-                    clearInterval(progressInterval);
-                }
-                setAgentArchitectureStatus('sales', 'running', salesProgress);
-                updateMasterProgress(salesProgress * 0.25);
-            }, 100);
-            
-            setTimeout(() => {
-                clearInterval(progressInterval);
-                setAgentArchitectureStatus('sales', 'done');
-                updateMasterProgress(25);
-                btn.style.display = 'none';
-                // Skip the intermediate button and go straight to full analysis
-                startGeminiAnalysis();
-            }, 1500);
+            setAgentArchitectureStatus('sales', 'done');
+            updateMasterProgress(25);
+            btn.style.display = 'none';
+            document.getElementById('proceed-container').style.display = 'none';
+            startGeminiAnalysis();
         }
 
         function archiveRFP() {
