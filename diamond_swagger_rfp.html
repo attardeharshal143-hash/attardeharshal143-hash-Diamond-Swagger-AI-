@@ -447,97 +447,9 @@
                     <textarea id="myProductContext" rows="3" placeholder="Briefly describe your product/service specs so the AI can match it."></textarea>
 
                     <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem;" id="workflow-controls">
-                        <button class="btn btn-primary" onclick="startSalesAgent()" id="runSalesBtn">
+                        <button class="btn btn-primary" onclick="startGeminiAnalysis()" id="runSalesBtn">
                             <i class="fas fa-bolt"></i> Run Full Analysis
                         </button>
-                    </div>
-
-                    <div id="proceed-container" style="display: none; margin-top: 1.5rem; padding: 1.5rem; background: var(--light-bg); border-radius: var(--radius); border: 2px dashed var(--border-color); text-align: center;">
-                        <h3 style="margin-bottom: 0.8rem;"><i class="fas fa-info-circle" style="color: var(--accent-blue);"></i> RFP Summarized & Qualified</h3>
-                        <p style="margin-bottom: 1.2rem; color: var(--text-medium);">The Sales Agent has extracted the requirements. Do you want to proceed with Technical Matching and Pricing?</p>
-                        <div style="display: flex; justify-content: center; gap: 1rem;">
-                            <button class="btn btn-outline" onclick="archiveRFP()">
-                                <i class="fas fa-archive"></i> Archive RFP
-                            </button>
-                            <button class="btn btn-success" onclick="startGeminiAnalysis()" id="runWorkflowBtn">
-                                <i class="fas fa-bolt"></i> Proceed to Full Analysis
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Agent Architecture Execution -->
-                <div class="card" id="agent-architecture-card" style="margin-top: 1.5rem;">
-                    <h2><i class="fas fa-sitemap"></i> Agent Architecture Execution</h2>
-                    
-                    <!-- Master Analysis Progress -->
-                    <div class="analysis-progress-container">
-                        <div class="analysis-progress-label">
-                            <span>Overall Analysis Progress</span>
-                            <span id="analysis-percentage">0%</span>
-                        </div>
-                        <div class="analysis-progress-bar-bg">
-                            <div id="analysis-progress-fill" class="analysis-progress-fill"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="agent-architecture">
-                        <div class="agent-row">
-                            <div class="agent-icon" style="background: #f59e0b;"><i class="fas fa-users"></i></div>
-                            <div class="agent-info">
-                                <div class="agent-name">Sales Agent</div>
-                                <div class="agent-task">Task: Automates RFP prospecting & filtration</div>
-                            </div>
-                             <div class="agent-status-badge" id="status-sales">
-                                <span class="status-text">Waiting</span>
-                                <div class="mini-progress-ring" id="ring-sales" style="display:none">
-                                    <svg viewBox="0 0 36 36"><path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/><path class="ring-fill" id="fill-sales" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/></svg>
-                                    <span class="ring-percent" id="percent-sales">0%</span>
-                                </div>
-                             </div>
-                        </div>
-                        <div class="agent-row">
-                            <div class="agent-icon" style="background: #10b981;"><i class="fas fa-microchip"></i></div>
-                            <div class="agent-info">
-                                <div class="agent-name">Technical Agent</div>
-                                <div class="agent-task">Task: Precisely matches specs to products</div>
-                            </div>
-                             <div class="agent-status-badge" id="status-technical">
-                                <span class="status-text">Waiting</span>
-                                <div class="mini-progress-ring" id="ring-technical" style="display:none">
-                                    <svg viewBox="0 0 36 36"><path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/><path class="ring-fill" id="fill-technical" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/></svg>
-                                    <span class="ring-percent" id="percent-technical">0%</span>
-                                </div>
-                             </div>
-                        </div>
-                        <div class="agent-row">
-                            <div class="agent-icon" style="background: #f59e0b;"><i class="fas fa-tag"></i></div>
-                            <div class="agent-info">
-                                <div class="agent-name">Pricing Agent</div>
-                                <div class="agent-task">Task: Generates dynamic price proposal</div>
-                            </div>
-                             <div class="agent-status-badge" id="status-pricing">
-                                <span class="status-text">Waiting</span>
-                                <div class="mini-progress-ring" id="ring-pricing" style="display:none">
-                                    <svg viewBox="0 0 36 36"><path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/><path class="ring-fill" id="fill-pricing" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/></svg>
-                                    <span class="ring-percent" id="percent-pricing">0%</span>
-                                </div>
-                             </div>
-                        </div>
-                        <div class="agent-row">
-                            <div class="agent-icon" style="background: #3b82f6;"><i class="fas fa-project-diagram"></i></div>
-                            <div class="agent-info">
-                                <div class="agent-name">Orchestrator Agent</div>
-                                <div class="agent-task">Task: Compiles inputs into cohesive response</div>
-                            </div>
-                             <div class="agent-status-badge" id="status-orchestrator">
-                                <span class="status-text">Waiting</span>
-                                <div class="mini-progress-ring" id="ring-orchestrator" style="display:none">
-                                    <svg viewBox="0 0 36 36"><path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/><path class="ring-fill" id="fill-orchestrator" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/></svg>
-                                    <span class="ring-percent" id="percent-orchestrator">0%</span>
-                                </div>
-                             </div>
-                        </div>
                     </div>
                 </div>
             </div>
