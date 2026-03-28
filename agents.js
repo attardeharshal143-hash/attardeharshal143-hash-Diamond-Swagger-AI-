@@ -2923,6 +2923,7 @@ Diamond Swagger Solutions Team`
                 setAgentArchitectureStatus(agent, 'waiting');
             });
             updateMasterProgress(0);
+            updateWorkflowStep(1);
             
             const btn = document.getElementById('runSalesBtn');
             if (btn) {
