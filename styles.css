@@ -923,8 +923,104 @@
             color: var(--text-medium);
             padding: 0.4rem 0.8rem;
             border-radius: 6px;
-            min-width: 100px;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-medium);
+            padding: 0.4rem 1rem;
+            border-radius: 10px;
+            min-width: 140px;
+            justify-content: flex-end;
+            transition: all 0.3s ease;
+        }
+
+        /* Analysis Progress Bar */
+        .analysis-progress-container {
+            margin-bottom: 2rem;
+            background: rgba(241, 245, 249, 0.5);
+            padding: 1.25rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        body.dark-mode .analysis-progress-container {
+            background: rgba(30, 41, 59, 0.3);
+        }
+
+        .analysis-progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .analysis-progress-bar-bg {
+            height: 10px;
+            background: var(--border-color);
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .analysis-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary-theme), var(--accent-green), var(--accent-purple));
+            border-radius: 5px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .analysis-progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: progress-shimmer 2s infinite;
+        }
+
+        @keyframes progress-shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Mini Progress Ring */
+        .mini-progress-ring {
+            position: relative;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
             justify-content: center;
+        }
+
+        .mini-progress-ring svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .mini-progress-ring .ring-bg {
+            fill: none;
+            stroke: var(--border-color);
+            stroke-width: 3.8;
+        }
+
+        .mini-progress-ring .ring-fill {
+            fill: none;
+            stroke: var(--primary-theme);
+            stroke-width: 3.8;
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.3s ease;
+        }
+
+        .mini-progress-ring .ring-percent {
+            position: absolute;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--primary-theme);
         }
 
         .agent-status-badge.running {
@@ -935,6 +1031,14 @@
         .agent-status-badge.done {
             color: var(--accent-green);
             background: rgba(16, 185, 129, 0.1);
+        }
+
+        .agent-status-badge.done .ring-fill {
+            stroke: var(--accent-green);
+        }
+
+        .agent-status-badge.done .ring-percent {
+            color: var(--accent-green);
         }
 
         .agent-status-badge .spinner {

@@ -2869,26 +2869,58 @@ Diamond Swagger Solutions Team`
         // --- UTILITY FUNCTIONS ---
         
         // Agent Architecture Status Management
-        function setAgentArchitectureStatus(agentId, status) {
+        function setAgentArchitectureStatus(agentId, status, progress = 0) {
             const row = document.getElementById(`agent-${agentId}`);
             const badge = document.getElementById(`status-${agentId}`);
+            const ring = document.getElementById(`ring-${agentId}`);
+            const fill = document.getElementById(`fill-${agentId}`);
+            const percent = document.getElementById(`percent-${agentId}`);
             
-            if (!row || !badge) return;
+            // Note: In the older HTML version 'agent-sales' etc may have been just row-index. Let's fix that check
+            const targetRow = row || document.querySelector(`.agent-row:has(#status-${agentId})`);
             
-            row.classList.remove('running', 'completed');
+            if (!targetRow || !badge) return;
+            
+            targetRow.classList.remove('running', 'completed');
             badge.classList.remove('running', 'done');
             
             if (status === 'running') {
-                row.classList.add('running');
+                targetRow.classList.add('running');
                 badge.classList.add('running');
-                badge.innerHTML = '<div class="spinner"></div> Running';
+                
+                const statusText = badge.querySelector('.status-text');
+                if (statusText) statusText.textContent = 'Running';
+                if (ring) ring.style.display = 'flex';
+                
+                if (fill && percent) {
+                    fill.setAttribute('stroke-dasharray', `${progress}, 100`);
+                    percent.textContent = `${Math.round(progress)}%`;
+                }
             } else if (status === 'done') {
-                row.classList.add('completed');
+                targetRow.classList.add('completed');
                 badge.classList.add('done');
-                badge.innerHTML = '<i class="fas fa-check"></i> Done';
+                
+                const statusText = badge.querySelector('.status-text');
+                if (statusText) {
+                    statusText.innerHTML = '<i class="fas fa-check"></i> Complete';
+                }
+                if (ring) ring.style.display = 'flex';
+                if (fill && percent) {
+                    fill.setAttribute('stroke-dasharray', `100, 100`);
+                    percent.textContent = `100%`;
+                }
             } else {
-                badge.innerHTML = '<i class="fas fa-clock"></i> Waiting';
+                const statusText = badge.querySelector('.status-text');
+                if (statusText) statusText.textContent = 'Waiting';
+                if (ring) ring.style.display = 'none';
             }
+        }
+
+        function updateMasterProgress(percentage) {
+            const fill = document.getElementById('analysis-progress-fill');
+            const text = document.getElementById('analysis-percentage');
+            if (fill) fill.style.width = percentage + '%';
+            if (text) text.textContent = Math.round(percentage) + '%';
         }
 
         // Reset all agents to waiting state
@@ -2896,6 +2928,7 @@ Diamond Swagger Solutions Team`
             ['sales', 'technical', 'pricing', 'orchestrator'].forEach(agent => {
                 setAgentArchitectureStatus(agent, 'waiting');
             });
+            updateMasterProgress(0);
         }
 
         // Functions for the Manual Proceed Flow
@@ -2907,16 +2940,28 @@ Diamond Swagger Solutions Team`
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Extracting...';
             btn.disabled = true;
             
-            setAgentArchitectureStatus('sales', 'running');
+            setAgentArchitectureStatus('sales', 'running', 0);
             
             // Scroll to the agent architecture execution container so user can see progress
             const architectureCard = document.getElementById('agent-architecture-card');
             if (architectureCard) {
                 architectureCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
+
+            let salesProgress = 0;
+            const progressInterval = setInterval(() => {
+                salesProgress += Math.random() * 12;
+                if (salesProgress >= 90) {
+                    clearInterval(progressInterval);
+                }
+                setAgentArchitectureStatus('sales', 'running', salesProgress);
+                updateMasterProgress(salesProgress * 0.25);
+            }, 100);
             
             setTimeout(() => {
+                clearInterval(progressInterval);
                 setAgentArchitectureStatus('sales', 'done');
+                updateMasterProgress(25);
                 btn.style.display = 'none';
                 // Skip the intermediate button and go straight to full analysis
                 startGeminiAnalysis();
@@ -2935,26 +2980,43 @@ Diamond Swagger Solutions Team`
 
         // Animate agent workflow during analysis
         async function animateAgentWorkflow() {
-            // We assume Sales Agent is already done when this is called via 'Proceed', but we set it just in case
+            // Master percentage resets but since sales already done we start at 25
+            updateMasterProgress(25);
             setAgentArchitectureStatus('sales', 'done');
             
             updateWorkflowStep(2);
             // Technical Agent - SKU Matching
-            setAgentArchitectureStatus('technical', 'running');
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            setAgentArchitectureStatus('technical', 'done');
+            await runAgentWithProgress('technical', 25, 50, 2000);
             
             updateWorkflowStep(3);
             // Pricing Agent - Cost Estimation
-            setAgentArchitectureStatus('pricing', 'running');
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            setAgentArchitectureStatus('pricing', 'done');
+            await runAgentWithProgress('pricing', 50, 75, 1500);
             
             updateWorkflowStep(4);
             // Orchestrator Agent - Compilation
-            setAgentArchitectureStatus('orchestrator', 'running');
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            setAgentArchitectureStatus('orchestrator', 'done');
+            await runAgentWithProgress('orchestrator', 75, 100, 1000);
+            
+            showToast("✅ Full Agentic Analysis Complete!");
+        }
+
+        async function runAgentWithProgress(agentId, startMaster, endMaster, duration) {
+            setAgentArchitectureStatus(agentId, 'running', 0);
+            
+            const steps = 20;
+            const stepDuration = duration / steps;
+            const masterRange = endMaster - startMaster;
+            
+            for (let i = 1; i <= steps; i++) {
+                const agentProgress = (i / steps) * 100;
+                const masterProgress = startMaster + (i / steps) * masterRange;
+                
+                setAgentArchitectureStatus(agentId, 'running', agentProgress);
+                updateMasterProgress(masterProgress);
+                
+                await new Promise(r => setTimeout(r, stepDuration));
+            }
+            
+            setAgentArchitectureStatus(agentId, 'done');
         }
 
         // Legacy function for compatibility
