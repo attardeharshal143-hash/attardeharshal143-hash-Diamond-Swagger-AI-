@@ -1,6 +1,7 @@
 // --- GLOBAL VARIABLES ---
         let g_apiKey = localStorage.getItem('titans_gemini_key') || '';
         let g_analysisData = null;
+        let analysisCompleted = false;
         
         // Gmail API Configuration
         const GMAIL_CLIENT_ID = '797317635282-3frebe7rqm2suiu8ulflr1ksle1fd5pg.apps.googleusercontent.com';
@@ -2164,6 +2165,7 @@ ${email.body}
 
         // --- MAIN GEMINI ANALYSIS ---
         async function startGeminiAnalysis() {
+            analysisCompleted = false;
             if (!g_apiKey) {
                 showToast("⚠️ No API Key found. Loading Demo Mode...");
                 loadDemoData();
@@ -2364,14 +2366,10 @@ Execute the detailed analysis now. Return ONLY the JSON object.`;
                                     setAgentStatus('done');
                                     showToast("✅ Analysis Complete with alternative model!");
                                     
-                                    setTimeout(() => {
-                                        updateWorkflowStep(3);
-                                        setTimeout(() => {
-                                            updateWorkflowStep(4);
-                                            renderResults();
-                                            showToast("🎉 Results ready!");
-                                        }, 1000);
-                                    }, 1000);
+                                    updateWorkflowStep(3);
+                                    updateWorkflowStep(4);
+                                    renderResults();
+                                    showToast("🎉 Results ready!");
                                     return;
                                 } else {
                                     console.log('Retry parsing also failed');
@@ -2405,6 +2403,7 @@ Execute the detailed analysis now. Return ONLY the JSON object.`;
                     console.log("Successfully parsed analysis:", g_analysisData);
                     
                     // Success workflow
+                    analysisCompleted = true;
                     updateWorkflowStep(2);
                     setAgentStatus('done');
                     showToast("✅ Analysis Complete!");
@@ -2420,19 +2419,16 @@ Execute the detailed analysis now. Return ONLY the JSON object.`;
                         progress: 50
                     });
 
-                    setTimeout(() => {
-                        updateWorkflowStep(3);
-                        setTimeout(() => {
-                            updateWorkflowStep(4);
-                            renderResults();
-                            showToast("🎉 Results ready! Check the Results tab.");
-                        }, 1000);
-                    }, 1000);
+                    updateWorkflowStep(3);
+                    updateWorkflowStep(4);
+                    renderResults();
+                    showToast("🎉 Results ready! Check the Results tab.");
                 } else {
                     throw new Error('Failed to extract valid JSON from AI response');
                 }
 
             } catch (err) {
+                analysisCompleted = true;
                 console.error("Analysis Error:", err);
                 setAgentStatus('idle');
                 
@@ -2733,8 +2729,8 @@ Diamond Swagger Solutions Team`
 
             setAgentStatus('running');
             
-            // Wait for agent animation to complete (4.5 seconds)
-            await new Promise(resolve => setTimeout(resolve, 4500));
+            // Wait for agent animation to complete (2.5 seconds)
+            await new Promise(resolve => setTimeout(resolve, 2500));
             
             setAgentStatus('done');
             renderResults();
@@ -2986,15 +2982,15 @@ Diamond Swagger Solutions Team`
             
             updateWorkflowStep(2);
             // Technical Agent - SKU Matching
-            await runAgentWithProgress('technical', 25, 50, 2000);
+            await runAgentWithProgress('technical', 25, 50, 1000);
             
             updateWorkflowStep(3);
             // Pricing Agent - Cost Estimation
-            await runAgentWithProgress('pricing', 50, 75, 1500);
+            await runAgentWithProgress('pricing', 50, 75, 800);
             
             updateWorkflowStep(4);
             // Orchestrator Agent - Compilation
-            await runAgentWithProgress('orchestrator', 75, 100, 1000);
+            await runAgentWithProgress('orchestrator', 75, 100, 700);
             
             showToast("✅ Full Agentic Analysis Complete!");
         }
@@ -3007,6 +3003,8 @@ Diamond Swagger Solutions Team`
             const masterRange = endMaster - startMaster;
             
             for (let i = 1; i <= steps; i++) {
+                if (analysisCompleted) return;
+                
                 const agentProgress = (i / steps) * 100;
                 const masterProgress = startMaster + (i / steps) * masterRange;
                 
