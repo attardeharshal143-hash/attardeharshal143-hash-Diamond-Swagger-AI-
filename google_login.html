@@ -1,0 +1,474 @@
+?<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in - Diamond Swagger AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        body {
+            min-height: 100vh;
+            background: #f0f4f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* Left Side - Branding */
+        .branding {
+            flex: 1;
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 50%, #1a73e8 100%);
+            padding: 60px 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+        }
+
+        .logo-icon {
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .logo-icon i {
+            font-size: 48px;
+        }
+
+        .brand-title {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin-bottom: 12px;
+        }
+
+        .brand-subtitle {
+            font-size: 15px;
+            opacity: 0.9;
+            max-width: 250px;
+            line-height: 1.5;
+        }
+
+        .features {
+            margin-top: 32px;
+            text-align: left;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .feature i {
+            color: #a7f3d0;
+        }
+
+        /* Right Side - Form */
+        .form-section {
+            flex: 1;
+            padding: 48px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .google-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .google-header img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .google-header span {
+            color: #5f6368;
+            font-size: 14px;
+        }
+
+        h2 {
+            font-size: 24px;
+            color: #202124;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            color: #5f6368;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        .subtitle a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+
+        /* Account Options */
+        .account-option {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 16px;
+            border: 1px solid #dadce0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 12px;
+        }
+
+        .account-option:hover {
+            background: #f8f9fa;
+            border-color: #1a73e8;
+        }
+
+        .account-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .account-info h4 {
+            font-size: 15px;
+            color: #202124;
+            margin-bottom: 2px;
+        }
+
+        .account-info p {
+            font-size: 13px;
+            color: #5f6368;
+        }
+
+        .another-account {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 16px;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+
+        .another-account:hover {
+            background: #f8f9fa;
+        }
+
+        .another-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px dashed #dadce0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5f6368;
+        }
+
+        .another-account:hover .another-icon {
+            border-color: #1a73e8;
+            color: #1a73e8;
+        }
+
+        .demo-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e8eaed;
+        }
+
+        .demo-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+
+        .demo-btn:hover {
+            box-shadow: 0 4px 15px rgba(66, 133, 244, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .policy {
+            margin-top: 24px;
+            font-size: 12px;
+            color: #5f6368;
+            line-height: 1.6;
+        }
+
+        .policy a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            flex-direction: column;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #dadce0;
+            border-top-color: #1a73e8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .loading-text {
+            margin-top: 20px;
+            color: #202124;
+            font-weight: 500;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .login-card {
+                flex-direction: column;
+                max-width: 450px;
+            }
+            .branding { padding: 40px 30px; }
+            .form-section { padding: 32px 28px; }
+            .features { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text" id="loadingText">Signing you in...</div>
+    </div>
+
+    <div class="login-card">
+        <!-- Left Side - Branding -->
+        <div class="branding">
+            <div class="logo-icon">
+                <i class="fas fa-dice-d20"></i>
+            </div>
+            <h1 class="brand-title">Diamond Swagger</h1>
+            <p class="brand-subtitle">AI-Powered RFP Automation Platform</p>
+            
+            <div class="features">
+                <div class="feature"><i class="fas fa-check-circle"></i> Smart RFP Analysis</div>
+                <div class="feature"><i class="fas fa-check-circle"></i> AI Proposal Generation</div>
+                <div class="feature"><i class="fas fa-check-circle"></i> Gmail Integration</div>
+                <div class="feature"><i class="fas fa-check-circle"></i> Win Probability Insights</div>
+            </div>
+        </div>
+
+        <!-- Right Side - Form -->
+        <div class="form-section">
+            <div class="google-header">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                <span>Sign in with Google</span>
+            </div>
+
+            <h2>Choose an account</h2>
+            <p class="subtitle">to continue to <a href="#">Diamond Swagger AI</a></p>
+
+            <div class="account-option" onclick="signInWithGoogle()">
+                <div class="account-avatar">
+                    <i class="fab fa-google"></i>
+                </div>
+                <div class="account-info">
+                    <h4>Sign in with Google</h4>
+                    <p>Connect your Gmail account</p>
+                </div>
+            </div>
+
+            <div class="another-account" onclick="signInWithGoogle()">
+                <div class="another-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <span>Use another account</span>
+            </div>
+
+            <div class="demo-section">
+                <button class="demo-btn" onclick="signInDemo()">
+                    <i class="fas fa-play-circle"></i>
+                    Try Demo Mode
+                </button>
+            </div>
+
+            <p class="policy">
+                Before using this app, you can review Diamond Swagger AI's 
+                <a href="#">privacy policy</a> and <a href="#">terms of service</a>.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA3AiCx_g-R0n_uEPHq2fTOZvlaObl57xM",
+            authDomain: "diamond-swagge-rfp.firebaseapp.com",
+            projectId: "diamond-swagge-rfp",
+            storageBucket: "diamond-swagge-rfp.firebasestorage.app",
+            messagingSenderId: "76929678071",
+            appId: "1:76929678071:web:74a7d1a16858957c4131f2",
+            measurementId: "G-LGE01CQXKQ"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const provider = new firebase.auth.GoogleAuthProvider();
+        
+        // Always show account selection
+        provider.setCustomParameters({ prompt: 'select_account' });
+
+        // Loading functions
+        function showLoading(text) {
+            document.getElementById('loadingText').textContent = text;
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        // Redirect to app
+        function goToApp(user) {
+            const params = new URLSearchParams({
+                user_email: user.email,
+                user_name: user.name || '',
+                login_type: user.demo_mode ? 'demo' : 'google'
+            });
+            window.location.href = 'diamond_swagger_rfp.html?' + params.toString();
+        }
+
+        // Google Sign In
+        async function signInWithGoogle() {
+            showLoading('Connecting to Google...');
+            
+            try {
+                const result = await auth.signInWithPopup(provider);
+                showLoading('Success! Redirecting...');
+                
+                const userInfo = {
+                    uid: result.user.uid,
+                    email: result.user.email,
+                    name: result.user.displayName,
+                    picture: result.user.photoURL
+                };
+                
+                localStorage.setItem('google_user', JSON.stringify(userInfo));
+                localStorage.setItem('connected_email', result.user.email);
+                
+                setTimeout(() => goToApp(userInfo), 500);
+                
+            } catch (error) {
+                hideLoading();
+                if (error.code !== 'auth/popup-closed-by-user') {
+                    alert('Sign-in failed: ' + error.message);
+                }
+            }
+        }
+
+        // Demo Mode
+        function signInDemo() {
+            showLoading('Starting Demo Mode...');
+            
+            const demoUser = {
+                uid: 'demo-user',
+                email: 'demo@titans.ai',
+                name: 'Demo User',
+                demo_mode: true
+            };
+            
+            localStorage.setItem('google_user', JSON.stringify(demoUser));
+            localStorage.setItem('connected_email', demoUser.email);
+            
+            setTimeout(() => goToApp(demoUser), 800);
+        }
+
+        // Handle logout & auto-login
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        if (urlParams.get('logout') === 'true') {
+            auth.signOut();
+            localStorage.removeItem('google_user');
+            localStorage.removeItem('connected_email');
+            window.history.replaceState({}, '', window.location.pathname);
+        } else {
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    const userInfo = {
+                        uid: user.uid,
+                        email: user.email,
+                        name: user.displayName,
+                        picture: user.photoURL
+                    };
+                    localStorage.setItem('google_user', JSON.stringify(userInfo));
+                    goToApp(userInfo);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

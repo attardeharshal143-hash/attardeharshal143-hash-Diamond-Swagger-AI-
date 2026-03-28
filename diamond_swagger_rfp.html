@@ -1,0 +1,1396 @@
+?<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diamond Swagger AI | RFP Automation with Google Gemini</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- DOCX Export Library -->
+    <script src="https://unpkg.com/docx@8.2.2/build/index.umd.js"></script>
+    <!-- FileSaver for downloads -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- html2pdf for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Google APIs -->
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://accounts.google.com/gsi/client"></script>
+
+    <!-- Google Fonts for better typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <!-- Sidebar Header with Logo and Close Button -->
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-dice-d20"></i>
+                <div>
+                    <h2 style="line-height:1">Diamond Swagger</h2>
+                </div>
+            </div>
+            <!-- Mobile Close Button -->
+            <button class="sidebar-close-btn" onclick="closeMobileSidebar()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="nav-section-label">Main Menu</div>
+
+        <div class="nav-item active" onclick="switchView('input', this)">
+            <i class="fas fa-th-large"></i> Dashboard
+        </div>
+        <div class="nav-item" onclick="switchView('inbox', this)" id="nav-inbox">
+            <i class="fas fa-envelope"></i> Email Inbox
+            <span class="nav-badge" id="inbox-badge" style="color: white; font-size: 0.7rem; padding: 3px 8px; border-radius: 10px; margin-left: auto;">0</span>
+        </div>
+        <div class="nav-item" onclick="switchView('results', this)">
+            <i class="fas fa-chart-bar"></i> Results
+        </div>
+        <div class="nav-item" onclick="showFavoritesModal()">
+            <i class="fas fa-star" style="color: #f59e0b;"></i> 
+            <span>Favorites</span>
+            <span class="nav-badge" id="favorites-badge" style="background: #f59e0b; color: white; font-size: 0.7rem; padding: 3px 8px; border-radius: 10px; margin-left: auto; display: none;">0</span>
+        </div>
+        <div class="nav-item" onclick="showCalculatorModal()">
+            <i class="fas fa-calculator"></i> 
+            <span>Cost Calculator</span>
+        </div>
+        <div class="nav-item" onclick="switchView('settings', this)">
+            <i class="fas fa-sliders-h"></i> Settings
+        </div>
+        <div class="nav-item" onclick="switchView('creators', this)">
+            <i class="fas fa-code"></i> Creators
+        </div>
+
+        <div class="nav-divider"></div>
+        
+        <div class="nav-section-label">Tools</div>
+        
+        <div class="nav-item" onclick="showDeadlinesModal()">
+            <i class="fas fa-bell"></i> 
+            <span>Deadlines</span>
+            <span class="nav-badge" id="deadline-badge" style="background: #ef4444; color: white; font-size: 0.7rem; padding: 3px 8px; border-radius: 10px; margin-left: auto; display: none;">0</span>
+        </div>
+        
+        <div class="nav-item" onclick="showShortcutsModal()">
+            <i class="fas fa-keyboard"></i> 
+            <span>Shortcuts</span>
+            <span class="kbd" style="margin-left: auto;">F1</span>
+        </div>
+
+        <div class="nav-divider"></div>
+        
+        <div class="nav-section-label">Account</div>
+        
+        <div class="nav-item" onclick="openLoginPage()" id="login-nav-item">
+            <i class="fab fa-google"></i> 
+            <span>Google Login</span>
+        </div>
+        
+        <div class="nav-item" onclick="toggleTheme()">
+            <i class="fas fa-moon" id="theme-icon"></i> 
+            <span id="theme-text">Dark Mode</span>
+        </div>
+        
+        <div class="nav-item logout-nav-item" onclick="logoutUser()" id="logout-nav-item" style="display: none;">
+            <i class="fas fa-sign-out-alt" style="color: #ef4444;"></i> 
+            <span style="color: #ef4444;">Logout</span>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer">
+            <div style="display: flex; align-items: center; gap: 0.8rem;">
+                <div style="width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #4285f4 0%, #34a853 100%); display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-robot" style="color: white; font-size: 1rem;"></i>
+                </div>
+                <div>
+                    <div class="sidebar-footer-title">AI Powered</div>
+                    <div class="sidebar-footer-subtitle">Google Gemini Pro</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        
+        <!-- Mobile Header with Logo -->
+        <div class="mobile-header">
+            <div class="mobile-logo">
+                <i class="fas fa-dice-d20"></i>
+                <h2>Diamond Swagger</h2>
+            </div>
+            <div class="mobile-user-actions" id="mobileUserActions">
+                <button class="mobile-logout-btn" onclick="logoutUser()" id="mobileLogoutBtn" style="display: none;" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- API CONFIG -->
+        <div class="api-banner">
+            <div>
+                <strong><i class="fas fa-brain"></i> Google Gemini AI Integration</strong>
+                <div style="font-size: 0.8rem; opacity: 0.9;">Powered by Gemini Pro - Free & Fast RFP Analysis</div>
+            </div>
+            <div class="api-input-group">
+                <input type="password" id="geminiKey" placeholder="Paste Google Gemini API Key here..." value="">
+                <button class="btn btn-sm" style="background: white; color: var(--primary-theme);" onclick="saveKey()">Save</button>
+                <button class="btn btn-sm" style="background: var(--secondary-theme); color: white;" onclick="testAPIKey()">Test</button>
+                <button class="btn btn-sm" style="background: var(--accent-orange); color: white;" onclick="manualFindModels()">Find Models</button>
+                <button class="btn btn-sm" style="background: #9ca3af; color: white;" onclick="showUsageStats()">Usage</button>
+            </div>
+        </div>
+
+        <!-- Views Container -->
+        <div class="views-container">
+        
+        <!-- VIEW: Input Dashboard -->
+        <div id="view-input" class="view-section">
+            
+            <!-- Top Bar with User Profile -->
+            <div class="top-bar">
+                <div class="top-bar-left">
+                    <span class="breadcrumb">RFP Workspace</span>
+                    <i class="fas fa-chevron-right breadcrumb-separator"></i>
+                    <span class="breadcrumb-active">Dashboard</span>
+                </div>
+                <div class="top-bar-right">
+                    <div class="notification-wrapper" style="position: relative;">
+                        <button class="notification-btn" onclick="toggleNotificationPanel()" title="Notifications">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge" id="notification-count">3</span>
+                        </button>
+                        <div class="notification-panel" id="notificationPanel" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); width: 320px; z-index: 1000; overflow: hidden;">
+                            <div style="padding: 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-weight: 600; color: var(--text-dark);">Notifications</span>
+                                <button onclick="clearNotifications()" style="background: none; border: none; color: var(--text-medium); cursor: pointer; font-size: 12px;">Clear all</button>
+                            </div>
+                            <div id="notificationList" style="max-height: 300px; overflow-y: auto;">
+                                <div class="notification-item" style="padding: 12px 16px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(66,133,244,0.05)'" onmouseout="this.style.background='transparent'">
+                                    <div style="display: flex; gap: 12px; align-items: flex-start;">
+                                        <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #4285f4, #34a853); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;"><i class="fas fa-file-alt"></i></div>
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 500; color: var(--text-dark); font-size: 13px;">New RFP Received</div>
+                                            <div style="font-size: 12px; color: var(--text-medium); margin-top: 2px;">Healthcare IT proposal ready for review</div>
+                                            <div style="font-size: 11px; color: var(--text-medium); margin-top: 4px;">2 hours ago</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="notification-item" style="padding: 12px 16px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(66,133,244,0.05)'" onmouseout="this.style.background='transparent'">
+                                    <div style="display: flex; gap: 12px; align-items: flex-start;">
+                                        <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #ef4444); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;"><i class="fas fa-clock"></i></div>
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 500; color: var(--text-dark); font-size: 13px;">Deadline Approaching</div>
+                                            <div style="font-size: 12px; color: var(--text-medium); margin-top: 2px;">City Infrastructure RFP due in 3 days</div>
+                                            <div style="font-size: 11px; color: var(--text-medium); margin-top: 4px;">5 hours ago</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="notification-item" style="padding: 12px 16px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(66,133,244,0.05)'" onmouseout="this.style.background='transparent'">
+                                    <div style="display: flex; gap: 12px; align-items: flex-start;">
+                                        <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;"><i class="fas fa-check"></i></div>
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 500; color: var(--text-dark); font-size: 13px;">Proposal Submitted</div>
+                                            <div style="font-size: 12px; color: var(--text-medium); margin-top: 2px;">Tech Solutions RFP submitted successfully</div>
+                                            <div style="font-size: 11px; color: var(--text-medium); margin-top: 4px;">1 day ago</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="padding: 12px 16px; border-top: 1px solid var(--border-color); text-align: center;">
+                                <a href="#" onclick="showAllNotifications()" style="color: var(--primary-theme); text-decoration: none; font-size: 13px; font-weight: 500;">View all notifications</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="top-bar-divider"></div>
+                    <div class="user-profile-wrapper" style="position: relative;">
+                        <div class="user-profile" id="user-profile-header" onclick="toggleUserDropdown()" title="User Menu">
+                            <div class="user-info-header">
+                                <span class="user-name-header" id="user-name-display">Guest User</span>
+                                <span class="user-role">Proposal Manager</span>
+                            </div>
+                            <div class="user-avatar" id="user-avatar-display">
+                                <span>GU</span>
+                            </div>
+                        </div>
+                        <div class="user-dropdown" id="userDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); min-width: 200px; z-index: 1000; overflow: hidden;">
+                            <div style="padding: 16px; border-bottom: 1px solid var(--border-color);">
+                                <div style="font-weight: 600; color: var(--text-dark);" id="dropdown-user-name">Guest User</div>
+                                <div style="font-size: 12px; color: var(--text-medium);" id="dropdown-user-email">Not signed in</div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <button onclick="logoutUser()" style="width: 100%; padding: 10px 16px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div>
+                    <h1>Proposal Dashboard</h1>
+                    <p id="dashboard-greeting">Good morning, here's what's happening with your RFPs.</p>
+                </div>
+                <button class="btn-new-proposal" onclick="showNewProposalForm()">
+                    <i class="fas fa-plus"></i> New Proposal
+                </button>
+            </div>
+
+            <!-- Quick Actions - Colorful Cards Style -->
+            <div class="quick-actions">
+                <div class="quick-action-btn card-yellow" onclick="showNewProposalForm()">
+                    <div class="action-content">
+                        <h4>New Analysis</h4>
+                        <p>Start</p>
+                        <p class="action-subtitle">RFP Analysis</p>
+                    </div>
+                    <i class="fas fa-file-alt action-icon-large"></i>
+                </div>
+                <div class="quick-action-btn card-orange" onclick="showTemplatesModal()">
+                    <div class="action-content">
+                        <h4>Templates</h4>
+                        <p>Use</p>
+                        <p class="action-subtitle">Industry Templates</p>
+                    </div>
+                    <i class="fas fa-folder-open action-icon-large"></i>
+                </div>
+                <div class="quick-action-btn card-green" onclick="switchView('inbox', document.querySelector('#nav-inbox'))">
+                    <div class="action-content">
+                        <h4>Emails</h4>
+                        <p>Check</p>
+                        <p class="action-subtitle">RFP Inbox</p>
+                    </div>
+                    <i class="fas fa-envelope action-icon-large"></i>
+                </div>
+                <div class="quick-action-btn card-purple" onclick="showHistoryModal()">
+                    <div class="action-content">
+                        <h4>History</h4>
+                        <p>View</p>
+                        <p class="action-subtitle">Saved Proposals</p>
+                    </div>
+                    <i class="fas fa-history action-icon-large"></i>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue"><i class="fas fa-clock"></i></div>
+                    <div class="stat-label">Active Proposals</div>
+                    <div class="stat-value" id="stat-active">0</div>
+                    <span class="stat-change positive" id="stat-active-change">+0%</span>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-label">Submitted</div>
+                    <div class="stat-value" id="stat-submitted">0</div>
+                    <span class="stat-change positive" id="stat-submitted-change">+0%</span>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange"><i class="fas fa-exclamation-circle"></i></div>
+                    <div class="stat-label">Overdue Soon</div>
+                    <div class="stat-value" id="stat-overdue">0</div>
+                    <span class="stat-change negative" id="stat-overdue-change">+0%</span>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple"><i class="fas fa-trophy"></i></div>
+                    <div class="stat-label">Win Rate</div>
+                    <div class="stat-value" id="stat-winrate">0%</div>
+                    <span class="stat-change positive" id="stat-winrate-change">+0%</span>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid: Projects Table + Trends Chart -->
+            <div class="dashboard-grid">
+                <!-- Active RFP Projects -->
+                <div class="projects-card">
+                    <div class="card-header">
+                        <h3>Active RFP Projects</h3>
+                        <a href="#" onclick="switchView('results', document.querySelector('.nav-item:nth-child(3)'))">View All</a>
+                    </div>
+                    <table class="projects-table">
+                        <thead>
+                            <tr>
+                                <th>Client / Project</th>
+                                <th>Status</th>
+                                <th>Deadline</th>
+                                <th>Progress</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projects-table-body">
+                            <!-- Projects will be populated by JS -->
+                        </tbody>
+                    </table>
+                    <div class="empty-state" id="projects-empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <p>No active RFPs. Go to RFP Ingestion to start a new project.</p>
+                    </div>
+                </div>
+
+                <!-- Proposal Trends Chart -->
+                <div class="trends-card">
+                    <div class="card-header">
+                        <h3>Proposal Trends</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="trendsChart"></canvas>
+                    </div>
+                    <div class="peak-month">
+                        <span>Peak Month</span>
+                        <span id="peak-month-value">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Proposal Form (Hidden by default) -->
+            <div id="new-proposal-form" style="display: none; margin-top: 2rem;">
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                        <h2><i class="fas fa-robot"></i> Configure RFP Analysis</h2>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <button class="btn btn-outline btn-sm" onclick="showTemplatesModal()">
+                                <i class="fas fa-folder-open"></i> Templates
+                            </button>
+                            <button class="btn btn-outline btn-sm" onclick="showHistoryModal()">
+                                <i class="fas fa-history"></i> History
+                            </button>
+                            <button class="btn btn-outline btn-sm" onclick="loadDemoData()">
+                                <i class="fas fa-magic"></i> Demo
+                            </button>
+                            <button class="btn btn-outline btn-sm" onclick="hideNewProposalForm()">
+                                <i class="fas fa-times"></i> Close
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Auto-save indicator -->
+                    <div class="autosave-indicator" id="autosave-indicator" style="display: none; margin-bottom: 1rem;">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <span id="autosave-text">Saving...</span>
+                    </div>
+
+                    <div class="workflow-viz" style="margin-bottom: 1.5rem;">
+                        <div class="flow-step active" id="step-1"><i class="fas fa-search"></i> 1. Discover & Qualify</div>
+                        <div class="flow-step" id="step-2"><i class="fas fa-microchip"></i> 2. Analyse & Match</div>
+                        <div class="flow-step" id="step-3"><i class="fas fa-tag"></i> 3. Price & Strategize</div>
+                        <div class="flow-step" id="step-4"><i class="fas fa-layer-group"></i> 4. Synthesize & Deliver</div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div>
+                            <label>Client Company Name</label>
+                            <input type="text" id="clientName" placeholder="e.g. Tesla, Microsoft, Local Government..." value="">
+                        </div>
+                        <div>
+                            <label>Industry / Domain Context</label>
+                            <input type="text" id="rfpCategory" placeholder="e.g. Automotive, Cloud Computing, Construction..." value="">
+                        </div>
+                    </div>
+
+                    <label style="display: flex; align-items: center; justify-content: space-between;">
+                        <span>RFP Requirements / Email Body</span>
+                        <button type="button" class="file-upload-btn" onclick="document.getElementById('fileUploadInput').click()">
+                            <i class="fas fa-upload"></i> Upload File
+                        </button>
+                        <input type="file" id="fileUploadInput" accept=".txt,.pdf,.doc,.docx,.rtf" style="display: none;" onchange="handleFileSelect(event)">
+                    </label>
+                    
+                    <!-- File Info Bar -->
+                    <div class="file-info-bar" id="fileInfoBar">
+                        <i class="fas fa-file-alt"></i>
+                        <span class="file-name" id="uploadedFileName">document.txt</span>
+                        <span class="file-size" id="uploadedFileSize">12 KB</span>
+                        <button class="remove-file" onclick="clearUploadedFile()" title="Remove file">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Drag & Drop Zone -->
+                    <div class="drop-zone-wrapper">
+                        <div class="drop-zone" id="dropZone">
+                            <textarea id="rfpText" rows="6" placeholder="Paste the RFP requirements here, or drag & drop a file (TXT, PDF, DOC, DOCX)..."></textarea>
+                            <div class="drop-zone-overlay">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Drop your file here</span>
+                                <small>TXT, PDF, DOC, DOCX supported</small>
+                            </div>
+                            <div class="drop-zone-hint">
+                                <i class="fas fa-info-circle"></i>
+                                <span>Drag & drop files here or click <span class="file-types">Upload File</span> button</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label><i class="fas fa-database"></i> Our Product Context (What are we selling?)</label>
+                    <textarea id="myProductContext" rows="3" placeholder="Briefly describe your product/service specs so the AI can match it."></textarea>
+
+                    <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem;" id="workflow-controls">
+                        <button class="btn btn-primary" onclick="startSalesAgent()" id="runSalesBtn">
+                            <i class="fas fa-search"></i> 1. Run Sales Agent
+                        </button>
+                    </div>
+
+                    <div id="proceed-container" style="display: none; margin-top: 1.5rem; padding: 1.5rem; background: var(--light-bg); border-radius: var(--radius); border: 2px dashed var(--border-color); text-align: center;">
+                        <h3 style="margin-bottom: 0.8rem;"><i class="fas fa-info-circle" style="color: var(--accent-blue);"></i> RFP Summarized & Qualified</h3>
+                        <p style="margin-bottom: 1.2rem; color: var(--text-medium);">The Sales Agent has extracted the requirements. Do you want to proceed with Technical Matching and Pricing?</p>
+                        <div style="display: flex; justify-content: center; gap: 1rem;">
+                            <button class="btn btn-outline" onclick="archiveRFP()">
+                                <i class="fas fa-archive"></i> Archive RFP
+                            </button>
+                            <button class="btn btn-success" onclick="startGeminiAnalysis()" id="runWorkflowBtn">
+                                <i class="fas fa-bolt"></i> Proceed to Full Analysis
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agent Architecture Execution -->
+                <div class="card" style="margin-top: 1.5rem;">
+                    <h2><i class="fas fa-sitemap"></i> Agent Architecture Execution</h2>
+                    
+                    <div class="agent-architecture">
+                        <div class="agent-row">
+                            <div class="agent-icon" style="background: #f59e0b;"><i class="fas fa-users"></i></div>
+                            <div class="agent-info">
+                                <div class="agent-name">Sales Agent</div>
+                                <div class="agent-task">Task: Automates RFP prospecting & filtration</div>
+                            </div>
+                            <div class="agent-status-badge" id="status-sales"><i class="fas fa-clock"></i> Waiting</div>
+                        </div>
+                        <div class="agent-row">
+                            <div class="agent-icon" style="background: #10b981;"><i class="fas fa-microchip"></i></div>
+                            <div class="agent-info">
+                                <div class="agent-name">Technical Agent</div>
+                                <div class="agent-task">Task: Precisely matches specs to products</div>
+                            </div>
+                            <div class="agent-status-badge" id="status-technical"><i class="fas fa-clock"></i> Waiting</div>
+                        </div>
+                        <div class="agent-row">
+                            <div class="agent-icon" style="background: #f59e0b;"><i class="fas fa-tag"></i></div>
+                            <div class="agent-info">
+                                <div class="agent-name">Pricing Agent</div>
+                                <div class="agent-task">Task: Generates dynamic price proposal</div>
+                            </div>
+                            <div class="agent-status-badge" id="status-pricing"><i class="fas fa-clock"></i> Waiting</div>
+                        </div>
+                        <div class="agent-row">
+                            <div class="agent-icon" style="background: #3b82f6;"><i class="fas fa-project-diagram"></i></div>
+                            <div class="agent-info">
+                                <div class="agent-name">Orchestrator Agent</div>
+                                <div class="agent-task">Task: Compiles inputs into cohesive response</div>
+                            </div>
+                            <div class="agent-status-badge" id="status-orchestrator"><i class="fas fa-clock"></i> Waiting</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View: Results -->
+        <div id="view-results" class="view-section">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap: wrap; gap: 1rem;">
+                <h1><i class="fas fa-check-circle" style="color:var(--accent-green)"></i> Agentic Analysis Report</h1>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-outline" onclick="showChecklistModal()"><i class="fas fa-clipboard-check"></i> Checklist</button>
+                    <button class="btn btn-outline" onclick="switchView('input')">Back to Dashboard</button>
+                </div>
+            </div>
+
+            <!-- Stage 1 & 3: Sales and Pricing -->
+            <div class="grid-2">
+                <!-- Stage 1: Sales Agent -->
+                <div class="card" style="border-top: 4px solid var(--accent-orange);">
+                    <h2><i class="fas fa-users" style="color: var(--accent-orange);"></i> Stage 1: Sales Agent Output</h2>
+                    <p style="color:var(--text-medium); font-size: 0.85rem; margin-bottom: 1rem;">Opportunity Qualification & Prioritization</p>
+                    <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+                        <h3 style="color: var(--text-dark); margin-bottom: 0.5rem; font-size: 1rem;">Predicted Win Probability</h3>
+                        <div id="winProbDisplay" style="font-size: 3.5rem; font-weight: 800; color: var(--accent-green); line-height: 1;">--%</div>
+                        <p style="color:var(--text-medium); margin-top: 1rem; font-style: italic;" id="winReasonDisplay">Run analysis to see prediction.</p>
+                        <div style="width:100%; margin-top:1rem; height:120px; position:relative;">
+                            <canvas id="winChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stage 3: Pricing Agent -->
+                <div class="card" style="border-top: 4px solid #f59e0b;">
+                    <h2><i class="fas fa-tag" style="color: #f59e0b;"></i> Stage 3: Pricing Agent Output</h2>
+                    <p style="color:var(--text-medium); font-size: 0.85rem; margin-bottom: 1rem;">Dynamic Cost Estimation & Margin Analysis</p>
+                    <div style="background: var(--light-bg); border-radius: 12px; padding: 2rem; text-align: center; height: calc(100% - 70px); display: flex; flex-direction: column; justify-content: center; border: 1px solid var(--border-color);">
+                        <h4 style="color: var(--text-medium); margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px;">Estimated Market Value</h4>
+                        <div id="pricingMarketDisplay" style="font-size: 1.4rem; font-weight: 600; color: var(--text-dark); margin-bottom: 2rem;">--</div>
+                        <h4 style="color: var(--text-medium); margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px;">Suggested Competitive Bid</h4>
+                        <div id="pricingBidDisplay" style="font-size: 2rem; font-weight: 800; color: var(--accent-green);">--</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 2: Technical Agent -->
+            <div class="card" style="margin-top: 1.5rem; border-top: 4px solid var(--accent-green);">
+                <h2><i class="fas fa-microchip" style="color: var(--accent-green);"></i> Stage 2: Technical Agent Output</h2>
+                <p style="color:var(--text-medium); font-size: 0.85rem; margin-bottom: 1rem;">Requirements Matching & Compliance Verification</p>
+                <div style="overflow-x: auto;">
+                    <table class="comparison-table">
+                        <thead><tr><th>RFP Requirement</th><th>Verified Solution Match</th><th>Compliance</th></tr></thead>
+                        <tbody id="techTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Stage 4: Orchestrator Agent -->
+            <div class="card" style="margin-top: 1.5rem; border-top: 4px solid var(--accent-blue);">
+                <h2><i class="fas fa-project-diagram" style="color: var(--accent-blue);"></i> Stage 4: Orchestrator Agent Output</h2>
+                <p style="color:var(--text-medium); font-size: 0.85rem; margin-bottom: 1.5rem;">Compiled Submission-Ready Executive Proposal</p>
+                <div style="background:var(--light-bg); padding:1.5rem; border-radius:12px; border:1px solid var(--border-color); min-height: 250px; font-family: 'Inter', system-ui, sans-serif; font-size: 0.95rem; line-height: 1.6; white-space: pre-wrap; color: var(--text-dark);" id="finalDocPreview">
+                    <em style="color:var(--text-medium)">No proposal generated yet. Run the analysis from the Dashboard.</em>
+                </div>
+                <div style="margin-top:1.5rem; display:flex; gap:10px; flex-wrap: wrap;">
+                    <button class="btn btn-outline" style="background: #2b579a; color: white; border-color: #2b579a;" onclick="downloadDOCX()"><i class="fas fa-file-word"></i> Save as Word</button>
+                    <button class="btn btn-outline" onclick="copyToClipboard()"><i class="fas fa-copy"></i> Copy Content</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- View: Email Inbox -->
+        <div id="view-inbox" class="view-section">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                <h1><i class="fas fa-inbox"></i> Company Email Inbox</h1>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-outline" onclick="connectEmail()" id="connectEmailBtn">
+                        <i class="fas fa-link"></i> Connect Gmail
+                    </button>
+                    <button class="btn btn-primary" onclick="syncEmails()" id="syncEmailBtn" style="display: none;">
+                        <i class="fas fa-sync" id="sync-icon"></i> Sync Emails
+                    </button>
+                    <button class="btn btn-outline" onclick="disconnectEmail()" id="disconnectEmailBtn" style="display: none;">
+                        <i class="fas fa-unlink"></i> Disconnect
+                    </button>
+                </div>
+            </div>
+
+            <!-- Email Connection Status -->
+            <div class="card" id="emailStatusCard">
+                <h2><i class="fas fa-envelope"></i> Email Connection Status</h2>
+                <div id="emailStatus">
+                    <div style="background: rgba(66, 133, 244, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary-theme); margin-bottom: 1rem;">
+                        <h3 style="margin: 0 0 10px 0; color: var(--primary-theme);">
+                            <i class="fas fa-info-circle"></i> Gmail Integration Available
+                        </h3>
+                        <p style="margin: 0 0 10px 0; font-size: 0.9rem; color: var(--text-dark);">
+                            Sign in with your Google account to access Gmail integration and automatically sync RFP emails.
+                        </p>
+                        <button onclick="openLoginPage()" style="background: var(--primary-theme); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">
+                            <i class="fas fa-sign-in-alt"></i> Go to Login Page
+                        </button>
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="margin-bottom: 10px; color: var(--text-dark);">📋 Setup Steps:</h4>
+                        <ol style="margin-left: 20px; color: var(--text-medium); line-height: 1.6;">
+                            <li>Go to <a href="https://console.cloud.google.com/" target="_blank" style="color: var(--primary-theme);">Google Cloud Console</a></li>
+                            <li>Create a new project or select existing one</li>
+                            <li>Enable the <strong>Gmail API</strong></li>
+                            <li>Create <strong>OAuth 2.0 Client ID</strong> credentials</li>
+                            <li>Add your domain to authorized origins</li>
+                            <li>Replace placeholder credentials in the code</li>
+                        </ol>
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="margin-bottom: 10px; color: var(--text-dark);">✨ Demo Features Available Now:</h4>
+                        <ul style="margin-left: 20px; color: var(--text-medium); line-height: 1.6;">
+                            <li>✅ Auto-detect RFP emails by keywords</li>
+                            <li>✅ Extract requirements automatically</li>
+                            <li>✅ One-click analysis from inbox</li>
+                            <li>✅ Email filtering and management</li>
+                            <li>✅ Realistic demo emails with RFP content</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: rgba(16, 185, 129, 0.1); padding: 10px; border-radius: 6px; border-left: 3px solid var(--accent-green);">
+                        <strong>💡 Try Demo Mode:</strong>
+                        <p style="margin: 5px 0 0 0; font-size: 0.85rem;">
+                            Click "Connect Gmail" to see how the email integration works with sample RFP emails.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Email List -->
+            <div class="card" id="emailListCard">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2><i class="fas fa-envelope-open-text"></i> RFP Emails</h2>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <select id="emailFilter" onchange="filterEmails()" style="padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-dark);">
+                            <option value="all">All Emails</option>
+                            <option value="unread">Unread Only</option>
+                            <option value="rfp">RFP Keywords</option>
+                            <option value="today">Today</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline" onclick="markAllRead()">
+                            <i class="fas fa-check"></i> Mark All Read
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Compare Toolbar - Always Visible -->
+                <div id="compareToolbar" style="background: linear-gradient(135deg, var(--primary-theme) 0%, var(--secondary-theme) 100%); color: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <i class="fas fa-balance-scale fa-lg"></i>
+                            <div>
+                                <strong id="compareCount">0 RFPs selected</strong>
+                                <div style="font-size: 0.8rem; opacity: 0.9;">Select RFPs to compare and find the best opportunity</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <button class="btn btn-sm" style="background: white; color: var(--primary-theme);" onclick="loadDemoEmailsAndRefresh()">
+                                <i class="fas fa-play"></i> Load Demo RFPs
+                            </button>
+                            <button class="btn btn-sm" style="background: rgba(255,255,255,0.2); color: white;" onclick="selectAllRFPsInbox()">
+                                <i class="fas fa-check-square"></i> Select All
+                            </button>
+                            <button class="btn btn-sm" style="background: rgba(255,255,255,0.2); color: white;" onclick="clearInboxSelection()">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                            <button class="btn btn-sm" style="background: var(--accent-green); color: white;" onclick="compareSelectedRFPs()" id="compareNowBtn">
+                                <i class="fas fa-chart-bar"></i> Compare Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Compare Stats -->
+                <div id="quickCompareStats" style="background: var(--light-bg); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border-color);">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; text-align: center;">
+                        <div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary-theme);" id="qsRFPCount">0</div>
+                            <div style="font-size: 0.8rem; color: var(--text-medium);">RFPs Available</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-green);" id="qsAvgWinRate">0%</div>
+                            <div style="font-size: 0.8rem; color: var(--text-medium);">Avg Win Rate</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-orange);" id="qsTotalValue">$0</div>
+                            <div style="font-size: 0.8rem; color: var(--text-medium);">Total Value</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #8b5cf6;" id="qsTopScore">0</div>
+                            <div style="font-size: 0.8rem; color: var(--text-medium);">Top Score</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="emailList" style="max-height: 500px; overflow-y: auto;"></div>
+            </div>
+        </div>
+
+        <!-- View: Creators -->
+        <div id="view-creators" class="view-section">
+            <div class="creators-header">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem;">
+                    <i class="fas fa-users" style="font-size: 1.5rem; background: linear-gradient(135deg, #4285f4, #34a853); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                    <h1 style="margin: 0; font-size: 1.5rem; font-weight: 800; letter-spacing: 2px;">MEET THE TEAM</h1>
+                </div>
+                <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; opacity: 0.7;">The talented minds behind Diamond Swagger AI RFP Automation Platform</p>
+            </div>
+
+            <div class="creators-grid">
+                <div class="creator-card">
+                    <div class="creator-avatar">HA</div>
+                    <div class="creator-info">
+                        <div class="creator-name">Harshal Attarde</div>
+                        <div class="creator-role">AI Architect</div>
+                        <div class="creator-skills">
+                            <span class="skill-tag">Machine Learning</span>
+                            <span class="skill-tag">AI Integration</span>
+                            <span class="skill-tag">System Design</span>
+                        </div>
+                        <div class="creator-social">
+                            <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+                            <a href="#" title="Email"><i class="fas fa-envelope"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="team-stats">
+                <div class="stat-item">
+                    <div class="stat-icon-wrap blue"><i class="fas fa-code"></i></div>
+                    <div class="stat-number">7,000+</div>
+                    <div class="stat-label">Lines of Code</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon-wrap green"><i class="fas fa-rocket"></i></div>
+                    <div class="stat-number">15+</div>
+                    <div class="stat-label">Features Built</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon-wrap orange"><i class="fas fa-clock"></i></div>
+                    <div class="stat-number">200+</div>
+                    <div class="stat-label">Hours Invested</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon-wrap purple"><i class="fas fa-brain"></i></div>
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">AI Powered</div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 2rem;">
+                <h2><i class="fas fa-heart" style="color: #e74c3c;"></i> About the Project</h2>
+                <p style="color: var(--text-medium); line-height: 1.6; margin-bottom: 1.5rem;">
+                    Diamond Swagger AI was born from the vision to revolutionize how businesses handle RFP processes. 
+                    Our team combined expertise in AI, full-stack development, data engineering, and machine learning 
+                    to create a comprehensive solution that saves time, increases win rates, and streamlines proposal generation.
+                </p>
+                
+                <div style="background: rgba(66, 133, 244, 0.1); padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--primary-theme);">
+                    <h3 style="margin: 0 0 1rem 0; color: var(--primary-theme);">
+                        <i class="fas fa-lightbulb"></i> Our Mission
+                    </h3>
+                    <p style="margin: 0; color: var(--text-dark); line-height: 1.6;">
+                        To empower businesses with AI-driven automation that transforms complex RFP processes into 
+                        streamlined, intelligent workflows. We believe in making advanced AI accessible to everyone, 
+                        regardless of technical expertise.
+                    </p>
+                </div>
+
+                <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <div style="background: rgba(52, 168, 83, 0.1); padding: 1rem; border-radius: 8px; flex: 1; min-width: 200px;">
+                        <h4 style="margin: 0 0 0.5rem 0; color: var(--secondary-theme);">
+                            <i class="fas fa-target"></i> Innovation
+                        </h4>
+                        <p style="margin: 0; font-size: 0.9rem; color: var(--text-medium);">
+                            Cutting-edge AI integration with Google Gemini for intelligent RFP analysis
+                        </p>
+                    </div>
+                    <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 8px; flex: 1; min-width: 200px;">
+                        <h4 style="margin: 0 0 0.5rem 0; color: #f59e0b;">
+                            <i class="fas fa-users"></i> Collaboration
+                        </h4>
+                        <p style="margin: 0; font-size: 0.9rem; color: var(--text-medium);">
+                            Seamless teamwork combining diverse skills and expertise
+                        </p>
+                    </div>
+                    <div style="background: rgba(139, 92, 246, 0.1); padding: 1rem; border-radius: 8px; flex: 1; min-width: 200px;">
+                        <h4 style="margin: 0 0 0.5rem 0; color: #8b5cf6;">
+                            <i class="fas fa-star"></i> Excellence
+                        </h4>
+                        <p style="margin: 0; font-size: 0.9rem; color: var(--text-medium);">
+                            Production-ready solution with enterprise-grade features
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View: Settings -->
+        <div id="view-settings" class="view-section">
+             <!-- Personalize App Section -->
+             <div class="card">
+                <h2><i class="fas fa-paint-brush"></i> Personalize App</h2>
+                <p style="color: var(--text-medium); margin-bottom: 1.5rem; font-size: 0.9rem;">Customize the look and feel of your dashboard</p>
+                
+                <!-- Theme Toggle -->
+                <div style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color);">
+                    <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem;">
+                        <i class="fas fa-adjust" style="color: var(--primary-theme);"></i> Theme Mode
+                    </label>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-sm btn-outline" onclick="setThemeMode('light')" id="theme-light-btn">
+                            <i class="fas fa-sun"></i> Light
+                        </button>
+                        <button class="btn btn-sm btn-outline" onclick="setThemeMode('dark')" id="theme-dark-btn">
+                            <i class="fas fa-moon"></i> Dark
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Background Pattern - Collapsible -->
+                <div>
+                    <div onclick="togglePatternSelector()" style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 0.8rem; background: var(--light-bg); border-radius: 10px; transition: all 0.3s ease;" id="pattern-header">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-palette" style="color: var(--accent-purple);"></i>
+                            <span style="font-weight: 600; color: var(--text-dark);">Background Pattern</span>
+                            <span style="font-size: 0.8rem; color: var(--text-medium); margin-left: 5px;" id="current-pattern-label">(Hexagon)</span>
+                        </div>
+                        <i class="fas fa-chevron-down" id="pattern-toggle-icon" style="color: var(--text-medium); transition: transform 0.3s ease;"></i>
+                    </div>
+                    
+                    <div id="pattern-selector-content" style="display: none; margin-top: 1rem; padding: 1rem; background: var(--light-bg); border-radius: 10px; animation: fadeIn 0.3s ease;">
+                        <p style="color: var(--text-medium); margin-bottom: 1rem; font-size: 0.85rem;">Choose a pattern style for the dashboard background</p>
+                        
+                        <div class="pattern-grid">
+                            <div class="pattern-option active" onclick="setPattern('hexagon')" data-pattern="hexagon">
+                                <div class="pattern-preview" style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.15'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E&quot;); background-size: 28px 49px;"></div>
+                                <div class="pattern-name">Hexagon</div>
+                            </div>
+                            <div class="pattern-option" onclick="setPattern('topography')" data-pattern="topography">
+                                <div class="pattern-preview" style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 600 600'%3E%3Cpath fill='none' stroke='%23000' stroke-width='2' stroke-opacity='0.15' d='M239 220c-27 0-54 9-75 27-42 36-48 99-14 143 17 22 42 36 69 40 27 4 55-2 78-18 46-32 57-95 25-141-16-23-40-39-67-46z'/%3E%3C/svg%3E&quot;); background-size: 100px 100px;"></div>
+                                <div class="pattern-name">Topography</div>
+                            </div>
+                            <div class="pattern-option" onclick="setPattern('circuit')" data-pattern="circuit">
+                                <div class="pattern-preview" style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill='%23000' fill-opacity='0.15'%3E%3Crect x='0' y='48' width='100' height='4'/%3E%3Crect x='48' y='0' width='4' height='100'/%3E%3Ccircle cx='50' cy='50' r='6'/%3E%3C/g%3E%3C/svg%3E&quot;); background-size: 40px 40px;"></div>
+                                <div class="pattern-name">Circuit</div>
+                            </div>
+                            <div class="pattern-option" onclick="setPattern('dots')" data-pattern="dots">
+                                <div class="pattern-preview" style="background-image: radial-gradient(circle, rgba(0,0,0,0.2) 2px, transparent 2px); background-size: 15px 15px;"></div>
+                                <div class="pattern-name">Dots</div>
+                            </div>
+                            <div class="pattern-option" onclick="setPattern('diagonal')" data-pattern="diagonal">
+                                <div class="pattern-preview" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(0,0,0,0.1) 8px, rgba(0,0,0,0.1) 10px);"></div>
+                                <div class="pattern-name">Diagonal</div>
+                            </div>
+                            <div class="pattern-option" onclick="setPattern('waves')" data-pattern="waves">
+                                <div class="pattern-preview" style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='20' viewBox='0 0 100 20'%3E%3Cpath fill='none' stroke='%23000' stroke-width='3' stroke-opacity='0.15' d='M0 10c25 0 25-10 50-10s25 10 50 10'/%3E%3C/svg%3E&quot;); background-size: 60px 15px;"></div>
+                                <div class="pattern-name">Waves</div>
+                            </div>
+                            <div class="pattern-option" onclick="setPattern('triangles')" data-pattern="triangles">
+                                <div class="pattern-preview" style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='72' viewBox='0 0 36 72'%3E%3Cg fill='%23000' fill-opacity='0.12'%3E%3Cpath d='M2 6h12L8 18 2 6zm18 36h12l-6 12-6-12z'/%3E%3C/g%3E%3C/svg%3E&quot;); background-size: 36px 72px;"></div>
+                                <div class="pattern-name">Triangles</div>
+                            </div>
+                            <div class="pattern-option" onclick="setPattern('none')" data-pattern="none">
+                                <div class="pattern-preview"></div>
+                                <div class="pattern-name">None</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Background Gradient Color - Collapsible -->
+                <div style="margin-top: 1rem;">
+                    <div onclick="toggleGradientSelector()" style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 0.8rem; background: var(--light-bg); border-radius: 10px; transition: all 0.3s ease;" id="gradient-header">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-fill-drip" style="color: var(--accent-orange);"></i>
+                            <span style="font-weight: 600; color: var(--text-dark);">Background Color</span>
+                            <span style="font-size: 0.8rem; color: var(--text-medium); margin-left: 5px;" id="current-gradient-label">(Golden)</span>
+                        </div>
+                        <i class="fas fa-chevron-down" id="gradient-toggle-icon" style="color: var(--text-medium); transition: transform 0.3s ease;"></i>
+                    </div>
+                    
+                    <div id="gradient-selector-content" style="display: none; margin-top: 1rem; padding: 1rem; background: var(--light-bg); border-radius: 10px; animation: fadeIn 0.3s ease;">
+                        <p style="color: var(--text-medium); margin-bottom: 1rem; font-size: 0.85rem;">Choose a gradient color for the dashboard background</p>
+                        
+                        <div class="pattern-grid">
+                            <div class="pattern-option active" onclick="setGradient('golden')" data-gradient="golden">
+                                <div class="pattern-preview" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 25%, #fcd34d 50%, #f59e0b 75%, #d97706 100%);"></div>
+                                <div class="pattern-name">Golden</div>
+                            </div>
+                            <div class="pattern-option" onclick="setGradient('purple')" data-gradient="purple">
+                                <div class="pattern-preview" style="background: linear-gradient(135deg, #e9d5ff 0%, #c4b5fd 25%, #a78bfa 50%, #8b5cf6 75%, #7c3aed 100%);"></div>
+                                <div class="pattern-name">Purple</div>
+                            </div>
+                            <div class="pattern-option" onclick="setGradient('ocean')" data-gradient="ocean">
+                                <div class="pattern-preview" style="background: linear-gradient(135deg, #cffafe 0%, #a5f3fc 25%, #67e8f9 50%, #22d3ee 75%, #06b6d4 100%);"></div>
+                                <div class="pattern-name">Ocean</div>
+                            </div>
+                            <div class="pattern-option" onclick="setGradient('rose')" data-gradient="rose">
+                                <div class="pattern-preview" style="background: linear-gradient(135deg, #ffe4e6 0%, #fecdd3 25%, #fda4af 50%, #fb7185 75%, #f43f5e 100%);"></div>
+                                <div class="pattern-name">Rose</div>
+                            </div>
+                            <div class="pattern-option" onclick="setGradient('emerald')" data-gradient="emerald">
+                                <div class="pattern-preview" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 25%, #6ee7b7 50%, #34d399 75%, #10b981 100%);"></div>
+                                <div class="pattern-name">Emerald</div>
+                            </div>
+                            <div class="pattern-option" onclick="setGradient('sunset')" data-gradient="sunset">
+                                <div class="pattern-preview" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 20%, #fdba74 40%, #fb923c 60%, #f97316 80%, #ea580c 100%);"></div>
+                                <div class="pattern-name">Sunset</div>
+                            </div>
+                            <div class="pattern-option" onclick="setGradient('sky')" data-gradient="sky">
+                                <div class="pattern-preview" style="background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 25%, #7dd3fc 50%, #38bdf8 75%, #0ea5e9 100%);"></div>
+                                <div class="pattern-name">Sky</div>
+                            </div>
+                            <div class="pattern-option" onclick="setGradient('lavender')" data-gradient="lavender">
+                                <div class="pattern-preview" style="background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 25%, #d8b4fe 50%, #c084fc 75%, #a855f7 100%);"></div>
+                                <div class="pattern-name">Lavender</div>
+                            </div>
+                            <div class="pattern-option" onclick="setGradient('mint')" data-gradient="mint">
+                                <div class="pattern-preview" style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 25%, #a7f3d0 50%, #6ee7b7 75%, #34d399 100%);"></div>
+                                <div class="pattern-name">Mint</div>
+                            </div>
+                            <div class="pattern-option" onclick="setGradient('coral')" data-gradient="coral">
+                                <div class="pattern-preview" style="background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 25%, #fecdd3 50%, #fda4af 75%, #fb7185 100%);"></div>
+                                <div class="pattern-name">Coral</div>
+                            </div>
+                            <div class="pattern-option" onclick="setGradient('indigo')" data-gradient="indigo">
+                                <div class="pattern-preview" style="background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 25%, #a5b4fc 50%, #818cf8 75%, #6366f1 100%);"></div>
+                                <div class="pattern-name">Indigo</div>
+                            </div>
+                            <div class="pattern-option" onclick="setGradient('slate')" data-gradient="slate">
+                                <div class="pattern-preview" style="background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 25%, #cbd5e1 50%, #94a3b8 75%, #64748b 100%);"></div>
+                                <div class="pattern-name">Slate</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+             </div>
+
+             <div class="card">
+                <h2><i class="fas fa-cog"></i> API Configuration</h2>
+                <div style="margin-bottom: 1.5rem;">
+                    <label>Google Gemini API Key</label>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <input type="password" id="geminiKey2" placeholder="Google Gemini API Key" style="flex: 1; background: var(--light-bg); color: var(--text-dark); border: 1px solid var(--border-color);">
+                        <button class="btn btn-sm btn-primary" onclick="saveKey2()">Save</button>
+                        <button class="btn btn-sm btn-outline" onclick="clearAPIKey()">Clear</button>
+                    </div>
+                    <p style="font-size: 0.8rem; color: var(--text-medium);">
+                        Get your free API key from <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--primary-theme);">Google AI Studio</a>
+                    </p>
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label>Default Product Context</label>
+                    <textarea id="defaultProductContext" rows="3" placeholder="Default product description..."></textarea>
+                    <button class="btn btn-sm btn-outline" onclick="saveDefaultContext()">Save Default</button>
+                </div>
+             </div>
+
+             <!-- Gmail Integration Setup -->
+             <div class="card">
+                <h2><i class="fas fa-envelope"></i> Gmail Integration Setup</h2>
+                
+                <div style="background: rgba(245, 158, 11, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-orange); margin-bottom: 1.5rem;">
+                    <h3 style="margin: 0 0 10px 0; color: var(--accent-orange);">
+                        <i class="fas fa-exclamation-triangle"></i> Real Gmail Integration Setup Required
+                    </h3>
+                    <p style="margin: 0; font-size: 0.9rem;">
+                        Currently using demo mode. Follow these steps to enable real Gmail integration:
+                    </p>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <h3 style="color: var(--text-dark); margin-bottom: 15px;">📋 Step-by-Step Setup Guide</h3>
+                    
+                    <div style="background: var(--light-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color);">
+                        <h4 style="margin: 0 0 10px 0; color: var(--primary-theme);">1. Google Cloud Console Setup</h4>
+                        <ol style="margin: 0 0 15px 20px; line-height: 1.6; color: var(--text-medium);">
+                            <li>Go to <a href="https://console.cloud.google.com/" target="_blank" style="color: var(--primary-theme);">Google Cloud Console</a></li>
+                            <li>Create a new project or select an existing one</li>
+                            <li>Enable the <strong>Gmail API</strong> in the API Library</li>
+                            <li>Go to "Credentials" and create <strong>OAuth 2.0 Client ID</strong></li>
+                            <li>Set application type to "Web application"</li>
+                            <li>Add your domain to "Authorized JavaScript origins"</li>
+                        </ol>
+                        
+                        <h4 style="margin: 15px 0 10px 0; color: var(--primary-theme);">2. Update Code Configuration</h4>
+                        <p style="margin: 0 0 10px 0; color: var(--text-medium);">Replace these values in the code:</p>
+                        <div style="background: var(--card-bg); padding: 10px; border-radius: 4px; font-family: monospace; font-size: 0.8rem; border: 1px solid var(--border-color);">
+                            <div style="color: var(--text-medium);">// Replace these placeholder values:</div>
+                            <div style="color: #ef4444;">const GMAIL_CLIENT_ID = 'your-actual-client-id.googleusercontent.com';</div>
+                            <div style="color: #ef4444;">const GMAIL_API_KEY = 'your-actual-api-key';</div>
+                        </div>
+                        
+                        <h4 style="margin: 15px 0 10px 0; color: var(--primary-theme);">3. OAuth Consent Screen</h4>
+                        <ul style="margin: 0 0 15px 20px; line-height: 1.6; color: var(--text-medium);">
+                            <li>Configure OAuth consent screen in Google Cloud Console</li>
+                            <li>Add your email as a test user (for development)</li>
+                            <li>Request Gmail read-only scope: <code>https://www.googleapis.com/auth/gmail.readonly</code></li>
+                        </ul>
+                        
+                        <h4 style="margin: 15px 0 10px 0; color: var(--primary-theme);">4. Security Considerations</h4>
+                        <ul style="margin: 0; line-height: 1.6; color: var(--text-medium);">
+                            <li>Use environment variables for production deployment</li>
+                            <li>Implement proper error handling for API failures</li>
+                            <li>Consider rate limiting for Gmail API calls</li>
+                            <li>Store OAuth tokens securely</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-green);">
+                    <h4 style="margin: 0 0 10px 0; color: var(--accent-green);">
+                        <i class="fas fa-lightbulb"></i> Demo Mode Features
+                    </h4>
+                    <p style="margin: 0; font-size: 0.9rem; color: var(--text-dark);">
+                        While setting up real Gmail integration, you can use demo mode to:
+                    </p>
+                    <ul style="margin: 10px 0 0 20px; color: var(--text-medium);">
+                        <li>Test the email-to-RFP workflow</li>
+                        <li>See how RFP detection works</li>
+                        <li>Try one-click analysis from emails</li>
+                        <li>Experience the full user interface</li>
+                    </ul>
+                </div>
+             </div>
+        </div>
+
+        </div><!-- End Views Container -->
+
+    </div>
+
+    <!-- Templates Modal -->
+    <div class="modal-overlay" id="templates-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-folder-open"></i> RFP Templates</h2>
+                <button class="modal-close" onclick="closeTemplatesModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="color: var(--text-medium); margin-bottom: 1.5rem;">Select a template to quickly start your RFP analysis with pre-filled industry context.</p>
+                <div class="templates-grid">
+                    <div class="template-card" onclick="loadTemplate('it-services')">
+                        <div class="template-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white;">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <h4>IT Services</h4>
+                        <p>Cloud, infrastructure, software development projects</p>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate('construction')">
+                        <div class="template-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white;">
+                            <i class="fas fa-hard-hat"></i>
+                        </div>
+                        <h4>Construction</h4>
+                        <p>Building, civil engineering, renovation projects</p>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate('consulting')">
+                        <div class="template-icon" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white;">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h4>Consulting</h4>
+                        <p>Business strategy, management consulting</p>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate('healthcare')">
+                        <div class="template-icon" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <h4>Healthcare</h4>
+                        <p>Medical equipment, healthcare IT, services</p>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate('manufacturing')">
+                        <div class="template-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">
+                            <i class="fas fa-industry"></i>
+                        </div>
+                        <h4>Manufacturing</h4>
+                        <p>Industrial equipment, supply chain, production</p>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate('government')">
+                        <div class="template-icon" style="background: linear-gradient(135deg, #64748b, #475569); color: white;">
+                            <i class="fas fa-landmark"></i>
+                        </div>
+                        <h4>Government</h4>
+                        <p>Public sector, municipal, federal contracts</p>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate('education')">
+                        <div class="template-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2); color: white;">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h4>Education</h4>
+                        <p>Schools, universities, e-learning platforms</p>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate('finance')">
+                        <div class="template-icon" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white;">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4>Finance</h4>
+                        <p>Banking, insurance, fintech solutions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div class="modal-overlay" id="history-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-history"></i> Proposal History</h2>
+                <button class="modal-close" onclick="closeHistoryModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <p style="color: var(--text-medium); margin: 0;">Your saved proposals and analyses</p>
+                    <button class="btn btn-sm btn-outline" onclick="clearHistory()" style="color: #ef4444; border-color: #ef4444;">
+                        <i class="fas fa-trash"></i> Clear All
+                    </button>
+                </div>
+                <div id="history-list">
+                    <!-- History items will be populated by JS -->
+                </div>
+                <div id="history-empty" style="text-align: center; padding: 3rem; color: var(--text-medium);">
+                    <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                    <p>No saved proposals yet. Run an analysis and click "Save" to add it here.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compliance Checklist Modal -->
+    <div class="modal-overlay" id="checklist-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-clipboard-check"></i> Compliance Checklist</h2>
+                <button class="modal-close" onclick="closeChecklistModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <p style="color: var(--text-medium); margin: 0;">Track RFP requirements completion</p>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <span id="checklist-progress" style="font-weight: 600; color: var(--primary-theme);">0/0</span>
+                        <span style="color: var(--text-medium);">completed</span>
+                    </div>
+                </div>
+                <div style="background: var(--light-bg); border-radius: 8px; height: 8px; margin-bottom: 1.5rem; overflow: hidden;">
+                    <div id="checklist-progress-bar" style="background: var(--accent-green); height: 100%; width: 0%; transition: width 0.3s;"></div>
+                </div>
+                <div id="checklist-items">
+                    <!-- Checklist items will be populated by JS -->
+                </div>
+                <div id="checklist-empty" style="text-align: center; padding: 3rem; color: var(--text-medium);">
+                    <i class="fas fa-list-check" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                    <p>Run an RFP analysis to generate a compliance checklist.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Modal -->
+    <div class="modal-overlay" id="shortcuts-modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-keyboard"></i> Keyboard Shortcuts</h2>
+                <button class="modal-close" onclick="closeShortcutsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: grid; gap: 0.75rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--light-bg); border-radius: 8px;">
+                        <span>Run Analysis</span>
+                        <span><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--light-bg); border-radius: 8px;">
+                        <span>Save Draft</span>
+                        <span><span class="kbd">Ctrl</span> + <span class="kbd">S</span></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--light-bg); border-radius: 8px;">
+                        <span>Open Templates</span>
+                        <span><span class="kbd">Alt</span> + <span class="kbd">1</span></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--light-bg); border-radius: 8px;">
+                        <span>Open History</span>
+                        <span><span class="kbd">Alt</span> + <span class="kbd">2</span></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--light-bg); border-radius: 8px;">
+                        <span>Toggle Dark Mode</span>
+                        <span><span class="kbd">Alt</span> + <span class="kbd">D</span></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--light-bg); border-radius: 8px;">
+                        <span>Show Shortcuts</span>
+                        <span><span class="kbd">F1</span> or <span class="kbd">Ctrl</span> + <span class="kbd">/</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cost Calculator Modal -->
+    <div class="modal-overlay" id="calculator-modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-calculator"></i> Cost Calculator</h2>
+                <button class="modal-close" onclick="closeCalculatorModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="color: var(--text-medium); margin-bottom: 1.5rem;">Calculate pricing and margins for your RFP proposal</p>
+                
+                <div class="calc-input-group">
+                    <div>
+                        <label>Base Cost ($)</label>
+                        <input type="number" id="calc-base-cost" placeholder="10000" oninput="calculatePricing()">
+                    </div>
+                    <div>
+                        <label>Labor Hours</label>
+                        <input type="number" id="calc-labor-hours" placeholder="100" oninput="calculatePricing()">
+                    </div>
+                </div>
+                
+                <div class="calc-input-group">
+                    <div>
+                        <label>Hourly Rate ($)</label>
+                        <input type="number" id="calc-hourly-rate" placeholder="75" oninput="calculatePricing()">
+                    </div>
+                    <div>
+                        <label>Overhead (%)</label>
+                        <input type="number" id="calc-overhead" placeholder="20" oninput="calculatePricing()">
+                    </div>
+                </div>
+                
+                <div class="calc-input-group">
+                    <div>
+                        <label>Target Margin (%)</label>
+                        <input type="number" id="calc-margin" placeholder="25">
+                    </div>
+                    <div>
+                        <label>Contingency (%)</label>
+                        <input type="number" id="calc-contingency" placeholder="10">
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <div style="margin-top: 1.5rem;">
+                    <button class="btn btn-primary" onclick="submitCalculation()" style="width: 100%; padding: 14px; font-size: 1rem; background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);">
+                        <i class="fas fa-calculator"></i> Calculate Pricing
+                    </button>
+                </div>
+                
+                <!-- Animated Results Section -->
+                <div class="calc-result-card" id="calc-results" style="display: none; margin-top: 1.5rem; opacity: 0; transform: translateY(20px); transition: all 0.5s ease;">
+                    <h3 style="margin: 0 0 1rem 0; font-size: 1rem; display: flex; align-items: center; gap: 8px;"></h3>
+                        <i class="fas fa-chart-pie" style="color: #4285f4;"></i> Pricing Breakdown
+                        <span style="margin-left: auto; font-size: 0.75rem; background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 4px 10px; border-radius: 20px;">Calculated</span>
+                    </h3>
+                    <div class="calc-result-row" style="opacity: 0; transform: translateX(-20px); transition: all 0.3s ease 0.1s;">
+                        <span>Base Cost</span>
+                        <span id="result-base">$0.00</span>
+                    </div>
+                    <div class="calc-result-row" style="opacity: 0; transform: translateX(-20px); transition: all 0.3s ease 0.2s;">
+                        <span>Labor Cost</span>
+                        <span id="result-labor">$0.00</span>
+                    </div>
+                    <div class="calc-result-row" style="opacity: 0; transform: translateX(-20px); transition: all 0.3s ease 0.3s;">
+                        <span>Overhead</span>
+                        <span id="result-overhead">$0.00</span>
+                    </div>
+                    <div class="calc-result-row" style="opacity: 0; transform: translateX(-20px); transition: all 0.3s ease 0.4s;">
+                        <span>Contingency</span>
+                        <span id="result-contingency">$0.00</span>
+                    </div>
+                    <div class="calc-result-row" style="opacity: 0; transform: translateX(-20px); transition: all 0.3s ease 0.5s;">
+                        <span>Profit Margin</span>
+                        <span id="result-profit">$0.00</span>
+                    </div>
+                    <div class="calc-result-row" style="opacity: 0; transform: translateX(-20px); transition: all 0.3s ease 0.6s; background: linear-gradient(135deg, rgba(66,133,244,0.1), rgba(52,168,83,0.1)); padding: 12px; border-radius: 8px; margin-top: 8px;">
+                        <span style="font-weight: 700; color: var(--text-dark);">💰 Total Bid Price</span>
+                        <span id="result-total" style="font-weight: 700; font-size: 1.2rem; color: #10b981;">$0.00</span>
+                    </div>
+                </div>
+                
+                <div id="calc-action-buttons" style="margin-top: 1rem; display: none; gap: 0.5rem; justify-content: flex-end; opacity: 0; transform: translateY(10px); transition: all 0.3s ease 0.7s;">
+                    <button class="btn btn-outline" onclick="resetCalculator()"><i class="fas fa-redo"></i> Reset</button>
+                    <button class="btn btn-primary" onclick="copyPricingToProposal()"><i class="fas fa-copy"></i> Use in Proposal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deadline Reminders Modal -->
+    <div class="modal-overlay" id="deadlines-modal">
+        <div class="modal-content" style="max-width: 650px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-bell"></i> Deadline Reminders</h2>
+                <button class="modal-close" onclick="closeDeadlinesModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                    <p style="color: var(--text-medium); margin: 0;">Track your RFP submission deadlines</p>
+                    <button class="btn btn-sm btn-primary" onclick="showAddDeadlineForm()">
+                        <i class="fas fa-plus"></i> Add Deadline
+                    </button>
+                </div>
+                
+                <!-- Add Deadline Form (hidden by default) -->
+                <div id="add-deadline-form" style="display: none; background: var(--light-bg); padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem;">
+                    <h4 style="margin: 0 0 1rem 0;"><i class="fas fa-calendar-plus"></i> New Deadline</h4>
+                    <div class="calc-input-group">
+                        <div>
+                            <label>Project Name</label>
+                            <input type="text" id="deadline-project" placeholder="Client RFP Name">
+                        </div>
+                        <div>
+                            <label>Due Date</label>
+                            <input type="date" id="deadline-date">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                        <button class="btn btn-sm btn-outline" onclick="hideAddDeadlineForm()">Cancel</button>
+                        <button class="btn btn-sm btn-primary" onclick="addDeadline()">Add Deadline</button>
+                    </div>
+                </div>
+                
+                <!-- Deadlines List -->
+                <div id="deadlines-list">
+                    <!-- Populated by JS -->
+                </div>
+                <div id="deadlines-empty" style="text-align: center; padding: 3rem; color: var(--text-medium);">
+                    <i class="fas fa-calendar-check" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                    <p>No deadlines set. Add your first RFP deadline to get reminders.</p>
+                </div>
+                
+                <!-- Notification Settings -->
+                <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                    <h4 style="margin: 0 0 1rem 0;"><i class="fas fa-cog"></i> Notification Settings</h4>
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                            <input type="checkbox" id="notify-browser" onchange="saveNotificationSettings()" checked style="width: 18px; height: 18px;">
+                            <span>Browser notifications (requires permission)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                            <input type="checkbox" id="notify-3days" onchange="saveNotificationSettings()" checked style="width: 18px; height: 18px;">
+                            <span>Remind me 3 days before deadline</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                            <input type="checkbox" id="notify-1day" onchange="saveNotificationSettings()" checked style="width: 18px; height: 18px;">
+                            <span>Remind me 1 day before deadline</span>
+                        </label>
+                    </div>
+                    <button class="btn btn-sm btn-outline" style="margin-top: 1rem;" onclick="requestNotificationPermission()">
+                        <i class="fas fa-bell"></i> Enable Browser Notifications
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Favorites Modal -->
+    <div class="modal-overlay" id="favorites-modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-star" style="color: #f59e0b;"></i> Favorites</h2>
+                <button class="modal-close" onclick="closeFavoritesModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="color: var(--text-medium); margin-bottom: 1.5rem;">Your starred proposals for quick access</p>
+                
+                <!-- Favorites List -->
+                <div id="favorites-list">
+                    <!-- Populated by JS -->
+                </div>
+                <div id="favorites-empty" style="text-align: center; padding: 3rem; color: var(--text-medium);">
+                    <i class="fas fa-star" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3; color: #f59e0b;"></i>
+                    <p>No favorites yet. Star a proposal from History to add it here.</p>
+                    <button class="btn btn-outline" style="margin-top: 1rem;" onclick="closeFavoritesModal(); showHistoryModal();">
+                        <i class="fas fa-history"></i> Go to History
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="agents.js"></script>
+</body>
+</html>
