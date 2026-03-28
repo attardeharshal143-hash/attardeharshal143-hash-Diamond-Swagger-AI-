@@ -823,6 +823,7 @@
         function showNewProposalForm() {
             const form = document.getElementById('new-proposal-form');
             if (form) {
+                resetAgentArchitecture();
                 form.style.display = 'block';
                 form.scrollIntoView({ behavior: 'smooth' });
             }
@@ -2922,6 +2923,15 @@ Diamond Swagger Solutions Team`
                 setAgentArchitectureStatus(agent, 'waiting');
             });
             updateMasterProgress(0);
+            
+            const btn = document.getElementById('runSalesBtn');
+            if (btn) {
+                btn.style.display = 'inline-flex';
+                btn.innerHTML = '<i class="fas fa-bolt"></i> Run Full Analysis';
+                btn.disabled = false;
+            }
+            const proceedContainer = document.getElementById('proceed-container');
+            if (proceedContainer) proceedContainer.style.display = 'none';
         }
 
         // Functions for the Manual Proceed Flow
@@ -2949,11 +2959,6 @@ Diamond Swagger Solutions Team`
         }
 
         function archiveRFP() {
-            document.getElementById('proceed-container').style.display = 'none';
-            const btn = document.getElementById('runSalesBtn');
-            btn.style.display = 'inline-flex';
-            btn.innerHTML = '<i class="fas fa-bolt"></i> Run Full Analysis';
-            btn.disabled = false;
             resetAgentArchitecture();
             showToast("RFP Archived. Workflow stopped.");
         }
@@ -3027,6 +3032,10 @@ Diamond Swagger Solutions Team`
 
         function switchView(viewId, element) {
             console.log('Switching to view:', viewId);
+            
+            if (viewId === 'input') {
+                resetAgentArchitecture();
+            }
             
             // Hide ALL view sections completely - force inline styles
             const allViews = document.querySelectorAll('.view-section');
