@@ -2185,6 +2185,7 @@ ${email.body}
 
             // UI Updates
             setAgentStatus('running');
+            showAnalysisOverlay();
             showToast("Gemini AI: Analyzing RFP requirements...");
 
             const runBtn = document.getElementById('runWorkflowBtn');
@@ -2473,6 +2474,7 @@ Execute the detailed analysis now. Return ONLY the JSON object.`;
             } finally {
                 runBtn.innerHTML = originalText;
                 runBtn.disabled = false;
+                hideAnalysisOverlay();
             }
         }
 
@@ -3083,6 +3085,55 @@ Diamond Swagger Solutions Team`
             toast.innerHTML = `<i class="fas ${icon}"></i> ${msg}`;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 4000);
+        }
+
+        function showAnalysisOverlay() {
+            let overlay = document.getElementById('analysis-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'analysis-overlay';
+                overlay.style.position = 'fixed';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100vw';
+                overlay.style.height = '100vh';
+                overlay.style.background = 'rgba(15, 23, 42, 0.75)';
+                overlay.style.backdropFilter = 'blur(8px)';
+                overlay.style.zIndex = '9999';
+                overlay.style.display = 'flex';
+                overlay.style.flexDirection = 'column';
+                overlay.style.alignItems = 'center';
+                overlay.style.justifyContent = 'center';
+                overlay.innerHTML = `
+                    <div style="background: var(--card-bg); padding: 3rem; border-radius: 20px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); text-align: center; border: 1px solid var(--border-color); animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+                        <div style="position: relative; width: 100px; height: 100px; margin: 0 auto 2rem auto;">
+                            <div style="position: absolute; width: 100%; height: 100%; border: 4px solid rgba(66, 133, 244, 0.1); border-radius: 50%;"></div>
+                            <div style="position: absolute; width: 100%; height: 100%; border: 4px solid var(--primary-theme); border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite;"></div>
+                            <i class="fas fa-brain" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; color: var(--primary-theme); animation: pulse 2s infinite;"></i>
+                        </div>
+                        <h2 style="margin-bottom: 0.5rem; font-weight: 800; background: linear-gradient(135deg, var(--primary-theme), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Agentic Processing...</h2>
+                        <p style="color: var(--text-medium); margin-bottom: 0; font-size: 0.95rem;">Diamond Swagger AI is analyzing the RFP requirements</p>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+                
+                if (!document.getElementById('overlay-animations')) {
+                    const style = document.createElement('style');
+                    style.id = 'overlay-animations';
+                    style.innerHTML = `
+                        @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+                        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                        @keyframes pulse { 0% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.95); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); } 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.95); } }
+                    `;
+                    document.head.appendChild(style);
+                }
+            }
+            overlay.style.display = 'flex';
+        }
+
+        function hideAnalysisOverlay() {
+            const overlay = document.getElementById('analysis-overlay');
+            if (overlay) overlay.style.display = 'none';
         }
 
         function toggleTheme() {
