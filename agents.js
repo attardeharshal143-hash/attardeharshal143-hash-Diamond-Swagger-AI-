@@ -120,11 +120,11 @@
                 setTimeout(() => {
                     if (!GMAIL_CLIENT_ID || GMAIL_CLIENT_ID === 'your-gmail-client-id.googleusercontent.com') {
                         loadDemoEmails();
-                        showToast('📋 Demo emails loaded');
+                        showToast('📋 Demo emails loaded (real Gmail API not configured)');
                     } else {
                         syncEmails();
                     }
-                }, 50);
+                }, 1000);
                 
             } else if (loginType === 'demo') {
                 showToast(`🎭 Demo Mode Active: ${userEmail}`);
@@ -153,8 +153,8 @@
             if (!googleUser && !connectedEmail) {
                 // No login detected - but don't force login, just show a tip
                 setTimeout(() => {
-                    showToast('💡 Tip: Sign in with Google for full features!');
-                }, 100);
+                    showToast('💡 Tip: Sign in with Google for full features, or try Demo Mode!');
+                }, 3000);
             } else if (googleUser) {
                 const user = JSON.parse(googleUser);
                 showToast(`👋 Welcome back, ${user.name || user.email}!`);
@@ -328,7 +328,7 @@
             // Redirect to login page
             setTimeout(() => {
                 window.location.href = 'google_login.html?logout=true';
-            }, 50);
+            }, 1000);
         }
 
         // --- API KEY MANAGEMENT ---
@@ -1095,8 +1095,8 @@
             showToast('📧 Loading sample RFP emails...');
             setTimeout(() => {
                 loadDemoEmails();
-                showToast('🎉 Demo inbox ready!');
-            }, 50);
+                showToast('🎉 Demo inbox ready! Try analyzing the RFP emails.');
+            }, 1000);
         }
 
         // Disconnect Gmail
@@ -1292,8 +1292,8 @@ ShopWave Engineering`
             
             try {
                 if (!GMAIL_CLIENT_ID || GMAIL_CLIENT_ID === 'your-gmail-client-id.googleusercontent.com') {
-                    // Demo mode - immediate
-                    await new Promise(resolve => setTimeout(resolve, 50));
+                    // Demo mode - simulate API delay
+                    await new Promise(resolve => setTimeout(resolve, 2000));
                     renderEmailList();
                     showToast('✅ Demo email sync complete!');
                 } else {
@@ -2967,17 +2967,43 @@ Diamond Swagger Solutions Team`
         // Animate agent workflow during analysis
         async function animateAgentWorkflow() {
             // Master percentage resets but since sales already done we start at 25
-            updateMasterProgress(100);
-            updateWorkflowStep(4);
+            updateMasterProgress(25);
+            setAgentArchitectureStatus('sales', 'done');
             
-            ['sales', 'technical', 'pricing', 'orchestrator'].forEach(agent => {
-                setAgentArchitectureStatus(agent, 'done');
-            });
+            updateWorkflowStep(2);
+            // Technical Agent - SKU Matching
+            await runAgentWithProgress('technical', 25, 50, 1000);
+            
+            updateWorkflowStep(3);
+            // Pricing Agent - Cost Estimation
+            await runAgentWithProgress('pricing', 50, 75, 800);
+            
+            updateWorkflowStep(4);
+            // Orchestrator Agent - Compilation
+            await runAgentWithProgress('orchestrator', 75, 100, 700);
             
             showToast("✅ Full Agentic Analysis Complete!");
         }
 
         async function runAgentWithProgress(agentId, startMaster, endMaster, duration) {
+            setAgentArchitectureStatus(agentId, 'running', 0);
+            
+            const steps = 20;
+            const stepDuration = duration / steps;
+            const masterRange = endMaster - startMaster;
+            
+            for (let i = 1; i <= steps; i++) {
+                if (analysisCompleted) return;
+                
+                const agentProgress = (i / steps) * 100;
+                const masterProgress = startMaster + (i / steps) * masterRange;
+                
+                setAgentArchitectureStatus(agentId, 'running', agentProgress);
+                updateMasterProgress(masterProgress);
+                
+                await new Promise(r => setTimeout(r, stepDuration));
+            }
+            
             setAgentArchitectureStatus(agentId, 'done');
         }
 
@@ -4095,7 +4121,7 @@ Return ONLY the improved email text, nothing else.`;
                 icon.className = 'fas fa-check';
                 setTimeout(() => {
                     indicator.style.display = 'none';
-                }, 500);
+                }, 2000);
             }
         }
 
@@ -4195,22 +4221,27 @@ Return ONLY the improved email text, nothing else.`;
             resultsCard.style.display = 'block';
             actionButtons.style.display = 'flex';
             
-            // Show results immediately
-            resultsCard.style.opacity = '1';
-            resultsCard.style.transform = 'translateY(0)';
-            
-            // Show each row
-            const rows = resultsCard.querySelectorAll('.calc-result-row');
-            rows.forEach(row => {
-                row.style.opacity = '1';
-                row.style.transform = 'translateX(0)';
-            });
-            
-            actionButtons.style.opacity = '1';
-            actionButtons.style.transform = 'translateY(0)';
-            
-            // Auto-scroll to results
-            resultsCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Trigger animation after a small delay
+            setTimeout(() => {
+                resultsCard.style.opacity = '1';
+                resultsCard.style.transform = 'translateY(0)';
+                
+                // Animate each row
+                const rows = resultsCard.querySelectorAll('.calc-result-row');
+                rows.forEach(row => {
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateX(0)';
+                });
+                
+                // Show action buttons
+                setTimeout(() => {
+                    actionButtons.style.opacity = '1';
+                    actionButtons.style.transform = 'translateY(0)';
+                }, 300);
+                
+                // Auto-scroll to results
+                resultsCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 50);
             
             showToast('✅ Calculation complete!');
         }
