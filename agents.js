@@ -2912,8 +2912,8 @@ Diamond Swagger Solutions Team`
             setTimeout(() => {
                 setAgentArchitectureStatus('sales', 'done');
                 btn.style.display = 'none';
-                document.getElementById('proceed-container').style.display = 'block';
-                showToast("Sales Agent Summary Complete! Waiting for proceed decision.");
+                // Skip the intermediate button and go straight to full analysis
+                startGeminiAnalysis();
             }, 1500);
         }
 
@@ -2921,7 +2921,7 @@ Diamond Swagger Solutions Team`
             document.getElementById('proceed-container').style.display = 'none';
             const btn = document.getElementById('runSalesBtn');
             btn.style.display = 'inline-flex';
-            btn.innerHTML = '<i class="fas fa-search"></i> 1. Run Sales Agent';
+            btn.innerHTML = '<i class="fas fa-bolt"></i> Run Full Analysis';
             btn.disabled = false;
             resetAgentArchitecture();
             showToast("RFP Archived. Workflow stopped.");
