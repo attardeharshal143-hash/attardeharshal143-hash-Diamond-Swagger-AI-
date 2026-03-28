@@ -923,104 +923,8 @@
             color: var(--text-medium);
             padding: 0.4rem 0.8rem;
             border-radius: 6px;
-            gap: 0.75rem;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-medium);
-            padding: 0.4rem 1rem;
-            border-radius: 10px;
-            min-width: 140px;
-            justify-content: flex-end;
-            transition: all 0.3s ease;
-        }
-
-        /* Analysis Progress Bar */
-        .analysis-progress-container {
-            margin-bottom: 2rem;
-            background: rgba(241, 245, 249, 0.5);
-            padding: 1.25rem;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-        }
-
-        body.dark-mode .analysis-progress-container {
-            background: rgba(30, 41, 59, 0.3);
-        }
-
-        .analysis-progress-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.75rem;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .analysis-progress-bar-bg {
-            height: 10px;
-            background: var(--border-color);
-            border-radius: 5px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .analysis-progress-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, var(--primary-theme), var(--accent-green), var(--accent-purple));
-            border-radius: 5px;
-            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-        }
-
-        .analysis-progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            animation: progress-shimmer 2s infinite;
-        }
-
-        @keyframes progress-shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        /* Mini Progress Ring */
-        .mini-progress-ring {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .mini-progress-ring svg {
-            width: 30px;
-            height: 30px;
-            transform: rotate(-90deg);
-            flex-shrink: 0;
-        }
-
-        .mini-progress-ring .ring-bg {
-            fill: none;
-            stroke: var(--border-color);
-            stroke-width: 3.8;
-        }
-
-        .mini-progress-ring .ring-fill {
-            fill: none;
-            stroke: var(--primary-theme);
-            stroke-width: 3.8;
-            stroke-linecap: round;
-            transition: stroke-dasharray 0.3s ease;
-        }
-
-        .mini-progress-ring .ring-percent {
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: var(--primary-theme);
-            white-space: nowrap;
-            min-width: 36px;
-            text-align: left;
+            min-width: 100px;
+            justify-content: center;
         }
 
         .agent-status-badge.running {
@@ -1031,14 +935,6 @@
         .agent-status-badge.done {
             color: var(--accent-green);
             background: rgba(16, 185, 129, 0.1);
-        }
-
-        .agent-status-badge.done .ring-fill {
-            stroke: var(--accent-green);
-        }
-
-        .agent-status-badge.done .ring-percent {
-            color: var(--accent-green);
         }
 
         .agent-status-badge .spinner {
@@ -3110,66 +3006,77 @@
         .file-info-bar .remove-file:hover {
             background: rgba(239, 68, 68, 0.1);
         }
- 
- / *   A I   P r o c e s s i n g   C o r e   A n i m a t i o n   * /  
- . a i - p r o c e s s i n g - c o r e   {  
-         p o s i t i o n :   r e l a t i v e ;  
-         w i d t h :   1 2 0 p x ;  
-         h e i g h t :   1 2 0 p x ;  
-         d i s p l a y :   f l e x ;  
-         a l i g n - i t e m s :   c e n t e r ;  
-         j u s t i f y - c o n t e n t :   c e n t e r ;  
- }  
- . c o r e - c e n t e r   {  
-         w i d t h :   6 0 p x ;  
-         h e i g h t :   6 0 p x ;  
-         b a c k g r o u n d :   l i n e a r - g r a d i e n t ( 1 3 5 d e g ,   v a r ( - - p r i m a r y - t h e m e ) ,   v a r ( - - a c c e n t - b l u e ) ) ;  
-         b o r d e r - r a d i u s :   5 0 % ;  
-         d i s p l a y :   f l e x ;  
-         a l i g n - i t e m s :   c e n t e r ;  
-         j u s t i f y - c o n t e n t :   c e n t e r ;  
-         c o l o r :   w h i t e ;  
-         f o n t - s i z e :   1 . 5 r e m ;  
-         z - i n d e x :   2 ;  
-         b o x - s h a d o w :   0   0   3 0 p x   r g b a ( 6 6 ,   1 3 3 ,   2 4 4 ,   0 . 4 ) ;  
-         a n i m a t i o n :   c o r e - i c o n - p u l s e   2 s   i n f i n i t e   e a s e - i n - o u t ;  
- }  
- . c o r e - p u l s e   {  
-         p o s i t i o n :   a b s o l u t e ;  
-         i n s e t :   0 ;  
-         b a c k g r o u n d :   v a r ( - - p r i m a r y - t h e m e ) ;  
-         b o r d e r - r a d i u s :   5 0 % ;  
-         o p a c i t y :   0 . 2 ;  
-         a n i m a t i o n :   c o r e - w a v e   2 s   i n f i n i t e   c u b i c - b e z i e r ( 0 . 4 ,   0 ,   0 . 2 ,   1 ) ;  
- }  
- . c o r e - r i n g   {  
-         p o s i t i o n :   a b s o l u t e ;  
-         i n s e t :   - 1 0 p x ;  
-         b o r d e r :   2 p x   d a s h e d   v a r ( - - a c c e n t - b l u e ) ;  
-         b o r d e r - r a d i u s :   5 0 % ;  
-         a n i m a t i o n :   s p i n   8 s   l i n e a r   i n f i n i t e ;  
-         o p a c i t y :   0 . 3 ;  
- }  
- @ k e y f r a m e s   c o r e - w a v e   {  
-         0 %   {   t r a n s f o r m :   s c a l e ( 0 . 5 ) ;   o p a c i t y :   0 . 8 ;   }  
-         1 0 0 %   {   t r a n s f o r m :   s c a l e ( 1 . 5 ) ;   o p a c i t y :   0 ;   }  
- }  
- @ k e y f r a m e s   c o r e - i c o n - p u l s e   {  
-         0 % ,   1 0 0 %   {   t r a n s f o r m :   s c a l e ( 1 ) ;   }  
-         5 0 %   {   t r a n s f o r m :   s c a l e ( 1 . 1 ) ;   }  
- }  
- @ k e y f r a m e s   s p i n   {  
-         f r o m   {   t r a n s f o r m :   r o t a t e ( 0 d e g ) ;   }  
-         t o   {   t r a n s f o r m :   r o t a t e ( 3 6 0 d e g ) ;   }  
- }  
- # v i e w - f i n a l i z i n g   {  
-         d i s p l a y :   n o n e ;  
-         f l e x - d i r e c t i o n :   c o l u m n ;  
-         a l i g n - i t e m s :   c e n t e r ;  
-         j u s t i f y - c o n t e n t :   c e n t e r ;  
-         a n i m a t i o n :   f a d e I n U p   0 . 6 s   e a s e - o u t ;  
- }  
- . v i e w - s e c t i o n . a c t i v e # v i e w - f i n a l i z i n g   {  
-         d i s p l a y :   f l e x   ! i m p o r t a n t ;  
- }  
- 
+
+        /* Master Analysis Progress Bar */
+        .analysis-progress-container {
+            display: flex;
+            flex-direction: column;
+            padding: 1.25rem 1.5rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .analysis-progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+        }
+
+        .analysis-progress-bar-bg {
+            height: 10px;
+            background: var(--light-bg);
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .analysis-progress-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-blue) 0%, var(--accent-green) 50%, var(--accent-purple) 100%);
+            border-radius: 5px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Mini Circular Progress */
+        .mini-progress-ring {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-left: 0.5rem;
+        }
+
+        .mini-progress-ring svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .ring-bg {
+            fill: none;
+            stroke: var(--border-color);
+            stroke-width: 3.5;
+        }
+
+        .ring-fill {
+            fill: none;
+            stroke: var(--accent-green);
+            stroke-width: 3.5;
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.5s ease-out;
+        }
+
+        .ring-percent {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
