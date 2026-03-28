@@ -1018,9 +1018,19 @@
 
         .mini-progress-ring .ring-percent {
             position: absolute;
-            font-size: 0.65rem;
-            font-weight: 700;
+            font-size: 0.58rem;
+            font-weight: 800;
             color: var(--primary-theme);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            pointer-events: none;
         }
 
         .agent-status-badge.running {
