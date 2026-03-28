@@ -3560,11 +3560,11 @@ ${emailDraft}
             const template = rfpTemplates[templateId];
             if (template) {
                 document.getElementById('rfpCategory').value = template.category;
-                document.getElementById('myProductContext').value = template.context;
-                document.getElementById('rfpText').value = template.sampleRfp;
+                document.getElementById('myProductContext').value = '';
+                document.getElementById('rfpText').value = '';
                 closeTemplatesModal();
                 showNewProposalForm();
-                showToast(`✅ Loaded ${template.name} template`);
+                showToast(`✅ Selected ${template.name} sector`);
             }
         }
 

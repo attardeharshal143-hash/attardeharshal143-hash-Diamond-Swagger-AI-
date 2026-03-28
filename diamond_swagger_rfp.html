@@ -152,7 +152,7 @@
                 <div style="font-size: 0.8rem; opacity: 0.9;">Powered by Gemini Pro - Free & Fast RFP Analysis</div>
             </div>
             <div class="api-input-group">
-                <input type="password" id="geminiKey" placeholder="Paste Google Gemini API Key here..." value="">
+                <input type="text" id="geminiKey" style="-webkit-text-security: disc;" autocomplete="off" spellcheck="false" data-lpignore="true" placeholder="Paste Google Gemini API Key here..." value="">
                 <button class="btn btn-sm" style="background: white; color: var(--primary-theme);" onclick="saveKey()">Save</button>
                 <button class="btn btn-sm" style="background: var(--secondary-theme); color: white;" onclick="testAPIKey()">Test</button>
                 <button class="btn btn-sm" style="background: var(--accent-orange); color: white;" onclick="manualFindModels()">Find Models</button>
