@@ -2993,12 +2993,6 @@ Diamond Swagger Solutions Team`
             await runAgentWithProgress('orchestrator', 75, 100, 700);
             
             showToast("✅ Full Agentic Analysis Complete!");
-
-            // If API is still working, show the beautiful finalizing screen
-            if (!analysisCompleted) {
-                switchView('finalizing');
-                startFinalizingLoop();
-            }
         }
 
         async function runAgentWithProgress(agentId, startMaster, endMaster, duration) {
@@ -3021,31 +3015,6 @@ Diamond Swagger Solutions Team`
             }
             
             setAgentArchitectureStatus(agentId, 'done');
-        }
-
-        async function startFinalizingLoop() {
-            const steps = [
-                { text: "Synthesizing multi-agent outputs...", percent: 85 },
-                { text: "Calibrating pricing models...", percent: 92 },
-                { text: "Performing final risk assessment...", percent: 96 },
-                { text: "Compiling executive proposal...", percent: 98 },
-                { text: "Finalizing document formatting...", percent: 99 }
-            ];
-            
-            const textEl = document.getElementById('loader-step-text');
-            const percentEl = document.getElementById('loader-percent');
-            const progressEl = document.getElementById('loader-progress-bar');
-            
-            let i = 0;
-            while (!analysisCompleted && i < steps.length) {
-                const step = steps[i];
-                if (textEl) textEl.textContent = step.text;
-                if (percentEl) percentEl.textContent = step.percent + "%";
-                if (progressEl) progressEl.style.width = step.percent + "%";
-                
-                await new Promise(r => setTimeout(r, 1500));
-                i++;
-            }
         }
 
         // Legacy function for compatibility
