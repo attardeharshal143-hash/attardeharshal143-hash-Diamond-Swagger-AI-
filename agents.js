@@ -1174,107 +1174,107 @@
             gmail_emails = [
                 {
                     id: '1',
-                    subject: 'RFP: Cloud Infrastructure Services 2024',
-                    sender: 'procurement@techcorp.com',
-                    senderName: 'TechCorp Procurement',
-                    snippet: 'We are seeking proposals for cloud infrastructure services including compute, storage, and networking solutions...',
-                    date: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+                    subject: 'RFP: Diamond Swagger AI Platform Expansion 2024',
+                    sender: 'tech-innovation@global-enterprise.com',
+                    senderName: 'Global Enterprise Tech',
+                    snippet: 'We are seeking a strategic partner to implement a decentralized AI orchestration layer across our global subsidiaries...',
+                    date: new Date(Date.now() - 45 * 60 * 1000), // 45 mins ago
                     isUnread: true,
                     isRFP: true,
                     priority: 'high',
-                    body: `Dear Vendors,
+                    body: `Dear Diamond Swagger Team,
 
-We are issuing this Request for Proposal (RFP) for comprehensive cloud infrastructure services.
+Global Enterprise is officially launching a Request for Proposal (RFP) for our Phase 2 AI Expansion.
 
-Requirements:
-- 99.9% uptime SLA
-- Auto-scaling capabilities
-- 24/7 enterprise support
-- SOC2 and GDPR compliance
-- Multi-region deployment
-- Budget: $200,000 - $300,000 annually
+Core Requirements:
+- Multi-Agent Orchestration Layer
+- Real-time JSON parsing & data validation
+- Zero-latency API connectivity with 99.99% SLA
+- Advanced Security: BYOK (Bring Your Own Key) architecture
+- Context-aware RFP processing & automated bid generation
+- Budget: $450,000 - $600,000
 
-Proposal deadline: January 31, 2024
-Contact: procurement@techcorp.com
+Submission Deadline: May 15, 2024
+Technical Lead: Harshal Attarde
 
-Best regards,
-TechCorp Procurement Team`
+Looking forward to your innovative proposal.`
                 },
                 {
                     id: '2',
-                    subject: 'Proposal Request - Software Development Services',
-                    sender: 'projects@innovate.com',
-                    senderName: 'Innovate Solutions',
-                    snippet: 'Looking for a development partner for our new mobile application project. Full-stack development required...',
-                    date: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
+                    subject: 'Urgent: GenAI Implementation for FinTech Compliance',
+                    sender: 'compliance@swift-bank.com',
+                    senderName: 'Swift Bank Compliance',
+                    snippet: 'Immediate requirement for an AI-driven compliance monitoring system that automatically analyzes financial regulations...',
+                    date: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 hours ago
                     isUnread: true,
                     isRFP: true,
-                    priority: 'medium',
+                    priority: 'high',
                     body: `Hello,
 
-We need a development partner for our mobile app project.
+Swift Bank requires an immediate GenAI solution for compliance mapping.
 
 Requirements:
-- React Native development
-- Backend API development
-- Cloud deployment
-- 6-month timeline
-- Budget: $150,000
+- Automated matching of new regulations to internal policies
+- Precise technical matching (SKU/Policy level)
+- Dynamic pricing model for scalable deployment
+- SOC2 Type II Certification required
+- Estimated Budget: $850,000
 
-Please submit proposals by February 15, 2024.
+We are under strict timelines. Please provide a feasibility report within 48 hours.
 
-Thanks,
-Innovate Solutions Team`
+Regards,
+Compliance Dept.`
                 },
                 {
                     id: '3',
-                    subject: 'Cybersecurity Audit Services - RFP',
-                    sender: 'security@banktech.com',
-                    senderName: 'BankTech Security',
-                    snippet: 'Request for cybersecurity audit and penetration testing services for our financial systems...',
-                    date: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
+                    subject: 'RFP for Smart Logistics & Predictive Analytics',
+                    sender: 'ops@logi-global.com',
+                    senderName: 'LogiGlobal Operations',
+                    snippet: 'Requesting proposals for an integrated predictive analytics platform for global supply chain optimization...',
+                    date: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
                     isUnread: false,
                     isRFP: true,
-                    priority: 'high',
-                    body: `Security Team,
+                    priority: 'medium',
+                    body: `Team,
 
-We require comprehensive cybersecurity services.
+LogiGlobal is seeking a vendor for our Smart Logistics initiative.
 
-Scope:
-- Penetration testing
-- Vulnerability assessment
-- Compliance audit (SOX, PCI-DSS)
-- Security training
-- Budget: $100,000
+Project Scope:
+- Predictive maintenance for fleet of 500+ vehicles
+- AI-driven route optimization
+- Automated RFP processing for sub-contractors
+- Dashboard for real-time win-probability analysis
+- Budget: $320,000
 
-Deadline: March 1, 2024
+Proposal submissions close end of next month.
 
-BankTech Security Team`
+Best,
+Ops Team`
                 },
                 {
                     id: '4',
-                    subject: 'Marketing Campaign Proposal Request',
-                    sender: 'marketing@retailplus.com',
-                    senderName: 'RetailPlus Marketing',
-                    snippet: 'We are looking for a marketing agency to handle our Q2 2024 campaign across digital channels...',
-                    date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+                    subject: 'Q2 Software Development - E-commerce Overhaul',
+                    sender: 'hiring@shopwave.io',
+                    senderName: 'ShopWave Engineering',
+                    snippet: 'Seeking a development agency for our Q2 frontend redesign and migration to Next.js...',
+                    date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
                     isUnread: false,
                     isRFP: false,
                     priority: 'low',
-                    body: `Marketing Team,
+                    body: `Hi,
 
-Looking for digital marketing services for Q2 2024.
+We are looking for a Next.js expert agency for a Q2 project.
 
-Services needed:
-- Social media management
-- PPC advertising
-- Content creation
-- Analytics and reporting
-- Budget: $75,000
+Scope:
+- Frontend redesign
+- Migration from legacy React
+- Performance optimization
+- Budget: $120,000
 
-Please respond by February 20, 2024.
+This is a standard project request, not a full RFP.
 
-RetailPlus Marketing`
+Thanks,
+ShopWave Engineering`
                 }
             ];
             
